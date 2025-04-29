@@ -251,14 +251,25 @@ function TextEditor({
                     px: 2,
                     py: 1,
                     display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1,
                     justifyContent: "space-between",
                     alignItems: "center",
                     borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
                     backgroundColor: theme.palette.action.hover,
                 }}
             >
-                <Stack direction="row" spacing={2} alignItems="center">
-                    <Typography variant="subtitle2" fontWeight={600}>
+                <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center">
+                    <Typography 
+                        variant="caption" 
+                        sx={{ 
+                            fontWeight: 700, 
+                            textTransform: "uppercase", 
+                            letterSpacing: 1,
+                            fontSize: { xs: 9, sm: 12 },
+                            opacity: 0.8
+                        }}
+                    >
                         Editor
                     </Typography>
                     
@@ -292,7 +303,7 @@ function TextEditor({
                     )}
                 </Stack>
 
-                <Stack direction="row" spacing={1} alignItems="center">
+                <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }} alignItems="center">
                     <Chip
                         avatar={
                             <Tooltip title="Number of words">
@@ -368,7 +379,16 @@ function TextEditor({
             </Box>
 
             {/* Editor Body */}
-            <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
+            <Box 
+                sx={{ 
+                    display: "flex", 
+                    flex: 1, 
+                    overflow: "hidden",
+                    backgroundColor: theme.palette.mode === "dark" 
+                        ? "rgba(0,0,0,0.12)" 
+                        : "rgba(0,0,0,0.02)"
+                }}
+            >
                 <Box
                     ref={lineNumbersRef}
                     sx={{
@@ -443,7 +463,10 @@ function TextEditor({
                             backgroundColor: "transparent",
                             color: "transparent", // Hide the text, but keep the caret
                             caretColor: theme.palette.text.primary,
-                            overflow: "auto",
+                            overflowY: "scroll",
+                            overflowX: "hidden",
+                            scrollbarWidth: "thin",
+                            scrollbarColor: "rgba(155, 155, 155, 0.5) transparent",
                             whiteSpace: "pre-wrap",
                             wordBreak: "break-all",
                             boxSizing: "border-box",

@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { clickLogging, clipboardLogging } from "../../services/analyticsService";
 import FAQsIcon from "./FAQsIcon";
+import HistoryIcon from '@mui/icons-material/History';
+import CloseIcon from '@mui/icons-material/Close';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Chip, Tooltip } from "@mui/material";
 
 import {
   Container,
@@ -16,9 +20,27 @@ import {
 
 function Hero() {
   const navigate = useNavigate();
-  const [joiningCode, setJoiningCode] = useState("");
+   const [joiningCode, setJoiningCode] = useState("");
   const [codeError, setCodeError] = useState(false);
+  const [history, setHistory] = useState([]);
   const JOINING_CODE_LENGTH = 5;
+
+  useEffect(() => {
+    try {
+        const saved = localStorage.getItem("board_history");
+        if (saved) {
+            setHistory(JSON.parse(atob(saved)));
+        }
+    } catch (e) {
+        console.error("Failed to parse history", e);
+        setHistory([]);
+    }
+  }, []);
+
+  const clearHistory = () => {
+    localStorage.removeItem("board_history");
+    setHistory([]);
+  };
 
   const generateJoiningCode = () => {
     const characters =
@@ -215,6 +237,71 @@ function Hero() {
           </Box>
         </Stack>
       </Paper>
+
+      {history.length > 0 && (
+          <Box sx={{ mt: 5, px: { xs: 1, md: 4 } }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <HistoryIcon sx={{ fontSize: 18, opacity: 0.6 }} />
+                    <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1.5, opacity: 0.6 }}>
+                        Recent Boards
+                    </Typography>
+                </Box>
+                <Button 
+                    size="small" 
+                    variant="text" 
+                    onClick={clearHistory}
+                    startIcon={<CloseIcon sx={{ fontSize: "14px !important" }} />}
+                    sx={{ 
+                        fontSize: 11, 
+                        fontWeight: 600,
+                        color: "error.main",
+                        opacity: 0.7, 
+                        "&:hover": { opacity: 1, backgroundColor: "rgba(211, 47, 47, 0.05)" } 
+                    }}
+                >
+                    Clear History
+                </Button>
+            </Box>
+
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                {history.map((code) => (
+                    <Chip
+                        key={code}
+                        label={code}
+                        onClick={() => navigate(`/${code}`)}
+                        onDelete={(e) => {
+                            e.stopPropagation();
+                            const newHistory = history.filter(c => c !== code);
+                            localStorage.setItem("board_history", btoa(JSON.stringify(newHistory)));
+                            setHistory(newHistory);
+                        }}
+                        deleteIcon={<CloseIcon sx={{ fontSize: "14px !important" }} />}
+                        variant="outlined"
+                        icon={<ArrowForwardIcon sx={{ fontSize: "14px !important" }} />}
+                        sx={{ 
+                            px: 1, 
+                            py: 2.5, 
+                            borderRadius: 2, 
+                            fontWeight: 700,
+                            letterSpacing: 1,
+                            backgroundColor: (theme) => theme.palette.mode === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+                            transition: "0.2s",
+                            "&:hover": {
+                                backgroundColor: "primary.main",
+                                color: "white",
+                                borderColor: "primary.main",
+                                transform: "translateY(-2px)",
+                                "& .MuiChip-icon, & .MuiChip-deleteIcon": {
+                                    color: "white"
+                                }
+                            }
+                        }}
+                    />
+                ))}
+            </Box>
+          </Box>
+        )}
 
       <FAQsIcon />
     </Container>

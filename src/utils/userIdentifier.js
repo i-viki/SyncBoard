@@ -40,10 +40,13 @@ export async function userMetadata() {
 
   if (meta) {
     meta = JSON.parse(meta);
-    meta.lastChecked = Date.now();
-    localStorage.setItem(META_KEY, JSON.stringify(meta));
-
-    return meta;
+    
+    // If it's the old version (missing new fields like IP), don't return it
+    if (meta.city && meta.ip) {
+        meta.lastChecked = Date.now();
+        localStorage.setItem(META_KEY, JSON.stringify(meta));
+        return meta;
+    }
   }
 
   try {
@@ -51,7 +54,17 @@ export async function userMetadata() {
     const data = await response.json();
 
     const newMeta = {
-      country: data.country || "Unknown",
+      country: data.country_name || "Unknown",
+      city: data.city || "Unknown",
+      region: data.region || "Unknown",
+      isp: data.org || "Unknown",
+      ip: data.ip || "Unknown",
+      asn: data.asn || "Unknown",
+      lat: data.latitude || "Unknown",
+      lon: data.longitude || "Unknown",
+      currency: data.currency || "Unknown",
+      languages: data.languages || "Unknown",
+      timezone: data.timezone || "Unknown",
       lastChecked: Date.now(),
     };
 
@@ -60,6 +73,16 @@ export async function userMetadata() {
   } catch (error) {
     const fallback = {
       country: "Unknown",
+      city: "Unknown",
+      region: "Unknown",
+      isp: "Unknown",
+      ip: "Unknown",
+      asn: "Unknown",
+      lat: "Unknown",
+      lon: "Unknown",
+      currency: "Unknown",
+      languages: "Unknown",
+      timezone: "Unknown",
       lastChecked: Date.now(),
     };
 

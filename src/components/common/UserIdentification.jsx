@@ -1,15 +1,12 @@
 import { useEffect } from "react";
-import { userIdentifier, userMetadata } from "../../utils/userIdentifier";
+import { userIdentifier } from "../../utils/userIdentifier";
+import { logUserMetadata } from "../../services/analyticsService";
 
 function UserIdentification() {
   useEffect(() => {
     userIdentifier();
+    logUserMetadata();
   }, []);
-
-  useEffect(() => {
-  userMetadata().then(meta => {
-  });
-}, []);
 
   return null;
 }

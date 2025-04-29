@@ -4,7 +4,7 @@ import ClipField from "../components/features/ClipField";
 import NoInternetComponent from "../components/common/NoInternetComponent";
 import { pageLogging } from "../services/analyticsService";
 import { Toaster, toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { userIdentifier } from "../utils/userIdentifier";
 
 
@@ -19,6 +19,22 @@ function Clipboard({ toggleTheme, mode }) {
     const uuid = userIdentifier();
     setUser(uuid);
   }, []);
+
+  // Board History Logic (Obfuscated Storage)
+  const { code } = useParams();
+  useEffect(() => {
+    if (code && /^[A-Za-z0-9]{5}$/.test(code)) {
+      try {
+        const rawHistory = localStorage.getItem("board_history");
+        const history = rawHistory ? JSON.parse(atob(rawHistory)) : [];
+        const newHistory = [code, ...history.filter(c => c !== code)].slice(0, 5);
+        localStorage.setItem("board_history", btoa(JSON.stringify(newHistory)));
+      } catch (e) {
+        // Fallback for legacy plain-text or corrupt data
+        localStorage.setItem("board_history", btoa(JSON.stringify([code])));
+      }
+    }
+  }, [code]);
 
   // Feedback Toast
   useEffect(() => {

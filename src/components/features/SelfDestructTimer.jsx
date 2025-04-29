@@ -56,12 +56,21 @@ export default function SelfDestructTimer({ code, expirationTime }) {
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       {expirationTime && (
         <Chip
-          icon={<TimerIcon sx={{ fontSize: "14px !important" }} />}
+          icon={<TimerIcon sx={{ fontSize: "14px !important", color: "inherit" }} />}
           label={timeLeft}
           size="small"
-          color="error"
-          variant="outlined"
-          sx={{ fontWeight: 600, animate: "pulse 2s infinite" }}
+          sx={{ 
+            fontWeight: 800, 
+            backgroundColor: "rgba(211, 47, 47, 0.15)",
+            color: "error.main",
+            border: "1px solid rgba(211, 47, 47, 0.3)",
+            animation: "pulse 2s infinite",
+            "@keyframes pulse": {
+                "0%": { opacity: 0.8 },
+                "50%": { opacity: 1, transform: "scale(1.05)" },
+                "100%": { opacity: 0.8 }
+            }
+          }}
         />
       )}
 
@@ -69,7 +78,13 @@ export default function SelfDestructTimer({ code, expirationTime }) {
         <IconButton
           onClick={handleClick}
           size="small"
-          color={expirationTime ? "error" : "default"}
+          sx={{ 
+            color: expirationTime ? "error.main" : "primary.main",
+            backgroundColor: expirationTime ? "rgba(211, 47, 47, 0.1)" : "rgba(59, 130, 246, 0.1)",
+            "&:hover": {
+                backgroundColor: expirationTime ? "rgba(211, 47, 47, 0.2)" : "rgba(59, 130, 246, 0.2)",
+            }
+          }}
         >
           {expirationTime ? <TimerIcon fontSize="small" /> : <TimerOffIcon fontSize="small" />}
         </IconButton>

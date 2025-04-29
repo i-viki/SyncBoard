@@ -204,8 +204,21 @@ function FilePanel({
                 )}
             </Box>
 
-            {/* File List */}
-            <Box sx={{ flex: 1, overflowY: "auto", pr: 0.5 }}>
+            {/* File List / Empty State */}
+            <Box
+                sx={{
+                    flex: 1,
+                    overflowY: "auto",
+                    pr: 0.5,
+                    display: "flex",
+                    flexDirection: "column",
+                    backgroundColor: theme.palette.mode === "dark"
+                        ? "rgba(0,0,0,0.12)"
+                        : "rgba(0,0,0,0.02)",
+                    borderRadius: 1,
+                    p: 1
+                }}
+            >
                 {files.length === 0 ? (
                     <Box sx={{ py: 4, textAlign: "center", opacity: 0.4 }}>
                         <Typography variant="body2">No files shared yet</Typography>

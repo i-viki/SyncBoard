@@ -8,6 +8,9 @@ import {
   Chip,
   Container,
   Button,
+  Drawer,
+  Divider,
+  Stack,
 } from "@mui/material";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import PeopleIcon from "@mui/icons-material/People";
@@ -21,8 +24,6 @@ import { Toaster, toast } from "sonner";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MenuIcon from "@mui/icons-material/Menu";
-import Drawer from "@mui/material/Drawer";
-import Divider from "@mui/material/Divider";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import QRCodeModal from "./QRCodeModal";
 import SelfDestructTimer from "../features/SelfDestructTimer";
@@ -129,14 +130,15 @@ export default function ClipNavbar({ internetStatus,
         onClose={toggleDrawer(false)}
         PaperProps={{
           sx: {
-            width: 260,
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
+            width: 280,
+            backdropFilter: "blur(25px)",
+            WebkitBackdropFilter: "blur(25px)",
             backgroundColor:
               mode === "dark"
-                ? "rgba(20, 24, 31, 0.95)"
-                : "rgba(255,255,255,0.95)",
+                ? "rgba(10, 12, 16, 0.92)"
+                : "rgba(255, 255, 255, 0.95)",
             borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+            boxShadow: "-10px 0 30px rgba(0,0,0,0.1)",
           },
         }}
       >
@@ -147,13 +149,25 @@ export default function ClipNavbar({ internetStatus,
             flexDirection: "column",
           }}
         >
-          {/* Header */}
+          {/* Header with Glow */}
           <Box
             sx={{
-              p: 2,
+              p: 3,
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+              position: "relative",
+              overflow: "hidden",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "2px",
+                background: "linear-gradient(90deg, transparent, #3b82f6, transparent)",
+                opacity: 0.5
+              }
             }}
           >
             <Box 
@@ -164,7 +178,7 @@ export default function ClipNavbar({ internetStatus,
               sx={{ 
                 display: "flex", 
                 alignItems: "center", 
-                gap: 1, 
+                gap: 1.5, 
                 textDecoration: "none", 
                 color: "inherit",
                 cursor: "pointer"
@@ -173,71 +187,99 @@ export default function ClipNavbar({ internetStatus,
               <Box
                 component="img"
                 src="/assets/pasteboard_logo.png"
-                sx={{ width: 24 }}
+                sx={{ width: 28, height: 28 }}
               />
-              <Typography fontWeight={600}>SyncBoard</Typography>
+              <Typography variant="h6" fontWeight={800} letterSpacing={-0.5}>
+                SyncBoard
+              </Typography>
             </Box>
 
-            <IconButton onClick={toggleDrawer(false)}>
-              <CloseRoundedIcon />
+            <IconButton 
+                onClick={toggleDrawer(false)}
+                sx={{ 
+                    backgroundColor: mode === "dark" ? "rgba(59, 130, 246, 0.1)" : "rgba(59, 130, 246, 0.05)",
+                    color: "primary.main"
+                }}
+            >
+              <CloseRoundedIcon size="small" />
             </IconButton>
           </Box>
 
           <Divider />
 
-          {/* Content */}
-          <Box sx={{ px: 2, py: 2, flex: 1 }}>
-            {/* Board Code */}
-            <Typography variant="caption" sx={{ opacity: 0.6 }}>
-              Board Code
-            </Typography>
+          {/* Content Sections */}
+          <Box sx={{ px: 2, py: 3, flex: 1 }}>
+            {/* Board Code Well */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.5, mb: 1.5, display: "block", opacity: 0.9 }}>
+                Active Board
+                </Typography>
 
-            <Box
-              sx={{
-                mt: 0.5,
-                mb: 2,
-                px: 2,
-                py: 1,
-                borderRadius: 999,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                backgroundColor:
-                  mode === "dark"
-                    ? "rgba(255,255,255,0.06)"
-                    : "rgba(0,0,0,0.04)",
-              }}
-            >
-              <Typography fontWeight={600}>{code}</Typography>
-
-              <IconButton
-                size="small"
-                onClick={() => {
-                  handleCopyCode();
-                  setMobileOpen(false);
+                <Box
+                sx={{
+                    px: 2,
+                    py: 2,
+                    borderRadius: 3,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
                 }}
-              >
-                <ShareIcon fontSize="small" />
-              </IconButton>
+                >
+                <Box>
+                    <Typography variant="h5" fontWeight={800} sx={{ color: "primary.main", letterSpacing: 2 }}>
+                        {code}
+                    </Typography>
+                    <Typography variant="caption" sx={{ opacity: 0.6 }}>
+                        Sharing Code
+                    </Typography>
+                </Box>
+
+                <IconButton
+                    onClick={() => {
+                    handleCopyCode();
+                    setMobileOpen(false);
+                    }}
+                    sx={{ backgroundColor: "primary.main", color: "white", "&:hover": { backgroundColor: "primary.dark" } }}
+                >
+                    <ShareIcon fontSize="small" />
+                </IconButton>
+                </Box>
             </Box>
 
-            {/* Connection Status */}
-            <Typography variant="caption" sx={{ opacity: 0.6 }}>
-              Status
-            </Typography>
+            {/* Status & Security Well */}
+            <Box
+                sx={{
+                    p: 2.5,
+                    borderRadius: 3,
+                    backgroundColor: mode === "dark" ? "rgba(59, 130, 246, 0.05)" : "rgba(59, 130, 246, 0.02)",
+                    border: (theme) => `1px solid ${mode === "dark" ? "rgba(59, 130, 246, 0.2)" : "rgba(59, 130, 246, 0.1)"}`,
+                }}
+            >
+                <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.5, mb: 2, display: "block", opacity: 0.9 }}>
+                    Network & Security
+                </Typography>
 
-            <Box sx={{ mt: 1 }}>
-              <Chip
-                label={!internetStatus ? "Offline" : status}
-                color={
-                  !internetStatus
-                    ? "error"
-                    : status === "Connected"
-                      ? "success"
-                      : "warning"
-                }
-                size="small"
-              />
+                <Stack spacing={3}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Typography variant="body2" fontWeight={600}>Status</Typography>
+                        <Chip
+                            label={!internetStatus ? "Offline" : status}
+                            color={!internetStatus ? "error" : status === "Connected" ? "success" : "warning"}
+                            size="small"
+                            sx={{ fontWeight: 700, borderRadius: 1 }}
+                        />
+                    </Box>
+
+                    <Box>
+                        <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>Self-Destruct</Typography>
+                        <SelfDestructTimer
+                            code={code}
+                            expirationTime={roomData?.expirationTime}
+                        />
+                    </Box>
+                </Stack>
             </Box>
           </Box>
 
@@ -313,16 +355,25 @@ export default function ClipNavbar({ internetStatus,
 
             <Chip
               icon={<PeopleIcon sx={{ fontSize: "14px !important" }} />}
-              label={`${activeUsers} active`}
+              label={
+                <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
+                    {activeUsers}
+                    <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.5 }}>
+                        active
+                    </Box>
+                </Box>
+              }
               size="small"
               variant="outlined"
               sx={{ fontWeight: 600 }}
             />
 
-            <SelfDestructTimer
-              code={code}
-              expirationTime={roomData?.expirationTime}
-            />
+            <Box sx={{ display: { xs: "none", md: "block" } }}>
+                <SelfDestructTimer
+                code={code}
+                expirationTime={roomData?.expirationTime}
+                />
+            </Box>
           </Box>
 
           {/* Right Side – Pill */}
