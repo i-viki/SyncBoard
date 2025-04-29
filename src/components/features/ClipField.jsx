@@ -82,7 +82,6 @@ function ClipField() {
   // Handle typing
   const handleValueChange = useCallback((value) => {
     setTextValue(value);
-
     calculateMetrics(value);
     updateLineNumbers(value);
 

@@ -19,8 +19,10 @@ import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import DownloadIcon from "@mui/icons-material/Download";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { useParams } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
+import { toast } from "sonner";
 
 import Prism from "prismjs";
 import "../../prism.css";
@@ -89,10 +91,13 @@ function TextEditor({
             clearTimeout(debounceTimer.current);
         }
 
+        // If the user clears EVERYTHING, we want it to reflect quickly
+        const delay = newVal === "" ? 200 : 500;
+
         debounceTimer.current = setTimeout(() => {
             onValueChange(newVal);
             debounceTimer.current = null;
-        }, 500); // 500ms debounce
+        }, delay);
     };
 
     // Precise Auto-detection logic using a scoring system
@@ -191,6 +196,12 @@ function TextEditor({
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         setOpenToast(true);
+    };
+
+    const handleClearAll = () => {
+        if (isBoardInteractionDisabled) return;
+        handleTextChange("");
+        toast.success("Board cleared");
     };
 
     const handleCloseToast = (event, reason) => {
@@ -333,6 +344,16 @@ function TextEditor({
                             </IconButton>
                         </Tooltip>
                     )}
+
+                    <Tooltip title="Clear Board">
+                        <IconButton 
+                            disabled={isBoardInteractionDisabled} 
+                            size="small" 
+                            onClick={handleClearAll}
+                        >
+                            <ClearAllIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
 
                     <Tooltip title={isLocked ? "Unlock board" : "Lock board"}>
                         <IconButton size="small" onClick={() => setLockOpen(true)}>
