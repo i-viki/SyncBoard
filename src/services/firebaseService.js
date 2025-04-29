@@ -1,6 +1,6 @@
 // firebaseRoomService.js
 
-import { ref, update, onValue, get, off } from "firebase/database";
+import { ref, update, onValue, get, off, onDisconnect, set } from "firebase/database";
 import { appDatabase } from "../config/firebase";
 
 /* ========================= */
@@ -69,9 +69,6 @@ export const updateRoomText = async (
   return update(roomRef, {
     text: value,
     images: firebaseData?.images || [],
-    users: firebaseData?.users?.length
-      ? firebaseData.users
-      : [USER_UUID],
     lastUpdated: now,
     passwordHash: firebaseData?.passwordHash || null,
   });
@@ -82,17 +79,42 @@ export const updateRoomText = async (
 /* ========================= */
 
 export const addUserToRoom = async (code, USER_UUID) => {
+  // Removed legacy users array tracking to favor real-time presence
+};
+
+/* ========================= */
+/* ===== PRESENCE ========== */
+/* ========================= */
+
+export const trackPresence = (code, SESSION_ID) => {
+  const presenceRef = ref(appDatabase, `rooms/${code}/users/${SESSION_ID}`);
+  const connectedRef = ref(appDatabase, ".info/connected");
+
+  return onValue(connectedRef, (snap) => {
+    if (snap.val() === true) {
+      onDisconnect(presenceRef).remove();
+      set(presenceRef, SESSION_ID);
+    }
+  });
+};
+
+export const listenToPresence = (code, callback) => {
+  const presenceRef = ref(appDatabase, `rooms/${code}/users`);
+  return onValue(presenceRef, (snap) => {
+    if (snap.exists()) {
+      callback(Object.keys(snap.val()).length);
+    } else {
+      callback(0);
+    }
+  });
+};
+
+/* ========================= */
+/* ===== EXPIRATION ======== */
+/* ========================= */
+
+export const setBoardExpiration = async (code, minutes) => {
   const roomRef = getRoomRef(code);
-
-  const snapshot = await get(roomRef);
-  if (!snapshot.exists()) return;
-
-  const data = snapshot.val();
-  const existingUsers = data.users || [];
-
-  if (!existingUsers.includes(USER_UUID)) {
-    await update(roomRef, {
-      users: [...existingUsers, USER_UUID],
-    });
-  }
+  const expirationTime = minutes ? Date.now() + minutes * 60 * 1000 : null;
+  return update(roomRef, { expirationTime });
 };

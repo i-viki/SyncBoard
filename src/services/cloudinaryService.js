@@ -16,13 +16,18 @@ export const uploadToCloudinary = async (file) => {
     throw new Error("Cloudinary environment variables missing");
   }
 
+  // Determine the correct resource type for Cloudinary
+  let resourceType = "raw";
+  if (file.type.startsWith("image/")) resourceType = "image";
+  else if (file.type.startsWith("video/")) resourceType = "video";
+
   const payload = new FormData();
   payload.append("file", file);
   payload.append("upload_preset", uploadPreset);
   payload.append("cloud_name", cloudName);
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
     {
       method: "POST",
       body: payload,
@@ -30,7 +35,9 @@ export const uploadToCloudinary = async (file) => {
   );
 
   if (!response.ok) {
-    throw new Error("Cloudinary upload failed");
+    const errorData = await response.json();
+    console.error("Cloudinary Error Response:", errorData);
+    throw new Error(errorData.error?.message || "Cloudinary upload failed");
   }
 
   const data = await response.json();

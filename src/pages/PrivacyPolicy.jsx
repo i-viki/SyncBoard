@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Container, Box, Typography, Divider } from "@mui/material";
+import { Container, Box, Typography, Divider, alpha } from "@mui/material";
 import PrivacyPolicyContent from "../components/features/PrivacyPolicyContent";
 
 function PrivacyPolicy() {
@@ -8,68 +8,58 @@ function PrivacyPolicy() {
     <>
       <Helmet>
         <title>Privacy Policy | SyncBoard</title>
-
-        <meta
-          name="description"
-          content="Learn how SyncBoard collects, uses, and protects your information. This Privacy Policy explains your rights and our data handling practices."
-        />
-        <meta name="robots" content="index, follow" />
-        <link
-          rel="canonical"
-          href="https://isyncboard.vercel.app/privacy-policy"
-        />
+        <meta name="description" content="Learn how SyncBoard protects your privacy and handles data." />
       </Helmet>
 
-      <Box
-        sx={(theme) => ({
-          py: 10,
-          backgroundColor:
-            theme.palette.mode === "dark"
-              ? "rgba(255,255,255,0.02)"
-              : "rgba(0,0,0,0.02)",
-        })}
-      >
+      <Box sx={{ py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
           {/* Header Section */}
-          <Box sx={{ mb: 6 }}>
+          <Box sx={{ mb: 8, textAlign: "center" }}>
             <Typography
               variant="h3"
               component="h1"
-              fontWeight={700}
+              fontWeight={900}
               gutterBottom
+              sx={{
+                letterSpacing: "-0.04em",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
               Privacy Policy
             </Typography>
-
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ maxWidth: 700 }}
-            >
-              Your privacy matters to us. This policy explains how
-              SyncBoard collects, uses, and safeguards information
-              while you use our platform.
+            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: "auto", fontWeight: 500 }}>
+              Your privacy is our priority. This policy outlines how we safeguard your data
+              while providing a seamless collaboration experience.
             </Typography>
-
-            <Divider sx={{ mt: 4 }} />
           </Box>
 
-          {/* Content Section */}
           <Box
             sx={{
+              p: { xs: 3, md: 6 },
+              borderRadius: 4,
+              border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              backgroundColor: (theme) => alpha(theme.palette.background.paper, 0.4),
+              backdropFilter: "blur(10px)",
               typography: "body1",
               lineHeight: 1.8,
               "& h2": {
-                mt: 5,
+                mt: 4,
                 mb: 2,
-                fontWeight: 600,
+                fontWeight: 700,
+                fontSize: "1.5rem",
+                color: "text.primary"
               },
               "& p": {
                 color: "text.secondary",
                 mb: 2,
-              },
+                fontSize: "1rem"
+              }
             }}
           >
+            <Divider sx={{ mb: 4, opacity: 0.5 }} />
+
             <PrivacyPolicyContent />
           </Box>
         </Container>

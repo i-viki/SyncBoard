@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   listenToRoom,
@@ -9,7 +9,7 @@ import {
 } from "../../services/firebaseService";
 import { uploadToCloudinary } from "../../services/cloudinaryService";
 import { userIdentifier } from "../../utils/userIdentifier";
-import { sanitizeString } from "../../utils/sanitize";
+import { sanitizeString, sanitizeFileName } from "../../utils/sanitize";
 import TextEditor from "./TextEditor";
 import FilePanel from "./FilePanel";
 import { useTheme, Box, Button } from "@mui/material";
@@ -30,6 +30,7 @@ function ClipField() {
   /* ================= STATE ================= */
 
   const [firebaseData, setFirebaseData] = useState({});
+  const [textValue, setTextValue] = useState("");
   const [images, setImages] = useState([]);
   const [loader, setLoader] = useState(false);
 
@@ -48,13 +49,11 @@ function ClipField() {
   const fileContainerRef = useRef(null);
   const timeoutRef = useRef(null);
 
-  /* ================= METRICS ================= */
+  // Board interaction disabled logic
   const isBoardInteractionDisabled =
     !!isLockDisabled === null
       ? true   // while loading, disable everything
       : isLockDisabled === false && isLocked;
-  console.log("board interaction disabled:", isBoardInteractionDisabled);
-  console.log("lock disabled:", isLockDisabled);
   // Calculate words & letters
   const calculateMetrics = (text) => {
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
@@ -81,8 +80,8 @@ function ClipField() {
   };
 
   // Handle typing
-  const handleValueChange = () => {
-    const value = textInputFieldRef.current.value;
+  const handleValueChange = useCallback((value) => {
+    setTextValue(value);
 
     calculateMetrics(value);
     updateLineNumbers(value);
@@ -91,35 +90,35 @@ function ClipField() {
     timeoutRef.current = setTimeout(() => {
       updateValueInDatabase(value);
     }, 500);
-  };
+  }, [firebaseData, isLocked, code]);
 
   /* ================= EDITOR ACTIONS ================= */
 
   // Select all text
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     const textarea = textInputFieldRef.current;
+    if (!textarea) return;
     textarea.focus();
     textarea.select();
     toast.info("All text selected", { duration: 2500 });
     clickLogging("All Text selected: " + code);
-  };
+  }, [code]);
 
   // Copy all text
-  const handleCopyAll = async () => {
-    const text = textInputFieldRef.current?.value || "";
+  const handleCopyAll = useCallback(async () => {
+    const text = textValue || "";
     await navigator.clipboard.writeText(text);
     toast.info("Text copied to clipboard", { duration: 2500 });
     clickLogging("Text copied to clipboard: " + code);
-  };
+  }, [textValue, code]);
 
   // Paste clipboard text
-  const handlePasteClipboard = async () => {
+  const handlePasteClipboard = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
-      const textarea = textInputFieldRef.current;
-      const newValue = textarea.value + text;
+      const newValue = textValue + text;
 
-      textarea.value = newValue;
+      setTextValue(newValue);
       updateValueInDatabase(newValue);
       updateLineNumbers(newValue);
 
@@ -128,7 +127,7 @@ function ClipField() {
     } catch {
       console.log("Clipboard permission denied");
     }
-  };
+  }, [textValue, code, firebaseData, isLocked]);
 
   /* ================= PIN HASH ================= */
 
@@ -149,6 +148,19 @@ function ClipField() {
     const unsubscribe = listenToRoom(code, (data) => {
       if (!data) return;
 
+      // Check for expiration
+      if (data.expirationTime && Date.now() > data.expirationTime) {
+        updateRoom(code, {
+          text: "",
+          images: [],
+          expirationTime: null,
+          passwordHash: null,
+          lastUpdated: new Date().toISOString(),
+        });
+        toast.error("Board session expired and has been cleared");
+        return;
+      }
+
       const text = data?.text ?? "";
 
       if (
@@ -156,6 +168,10 @@ function ClipField() {
         textInputFieldRef.current.value !== text
       ) {
         textInputFieldRef.current.value = text;
+      }
+
+      if (textValue !== text) {
+        setTextValue(text);
       }
 
       calculateMetrics(text);
@@ -167,7 +183,7 @@ function ClipField() {
 
       if (data?.images?.length) {
         const active = data.images.filter((img) => !img.deleted);
-        setImages(active.length ? [active[active.length - 1]] : []);
+        setImages(active);
       }
     });
 
@@ -205,8 +221,8 @@ function ClipField() {
         return;
       }
 
-      if (images.length >= 1) {
-        toast.error("Only one file allowed. Delete the current file first.");
+      if (images.length >= 5) {
+        toast.error("Maximum 5 files allowed per board.");
         return;
       }
       if (file.size > MAX_SIZE) {
@@ -275,33 +291,63 @@ function ClipField() {
   };
 
   // Delete file
-  const handleDeleteFile = (src) => {
+    const handleDeleteFile = useCallback((src) => {
     const updated = firebaseData.images.map((img) =>
       img.src === src ? { ...img, deleted: true } : img
     );
 
+    // Update Firebase and let the listener handle the UI update naturally
     updateRoom(code, { ...firebaseData, images: updated });
-    setImages([]);
-  };
+  }, [firebaseData, code]);
+
+  const handleUpdate = useCallback(
+    (field, val) => {
+      updateRoom(code, { ...firebaseData, [field]: val });
+    },
+    [code, firebaseData]
+  );
 
   // Download file
-  const handleDownloadFile = (src, name) => {
-    const encodedName = sanitizeString(name);
+  const handleDownloadFile = useCallback(async (src, name) => {
+    if (!src) return;
 
-    let downloadUrl = src;
+    const sanitizedName = sanitizeFileName(name);
+    console.log("Starting download for:", sanitizedName, "from URL:", src);
+    toast.info(`Preparing ${name}...`);
 
-    if (src.includes("/upload/")) {
-      const parts = src.split("/upload/");
-      downloadUrl = `${parts[0]}/upload/fl_attachment:${encodedName}/${parts[1]}`;
+    try {
+      console.log("Attempting Blob fetch...");
+      // Explicitly omit credentials to avoid triggering Cloudinary security filters
+      const response = await fetch(src, {
+        mode: "cors",
+        credentials: "omit"
+      });
+      if (!response.ok) throw new Error("Network response was not ok");
+      
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = sanitizedName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Blob download failed, falling back to direct link:", error);
+      // Fallback to direct link if fetch fails (e.g. CORS)
+      const link = document.createElement("a");
+      link.href = src;
+      link.download = sanitizedName;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = encodedName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  }, []);
 
 
 
@@ -311,18 +357,21 @@ function ClipField() {
     const textarea = textInputFieldRef.current;
     const lineBox = lineNumbersRef.current;
 
+    if (!textarea || !lineBox) return;
+
     const syncScroll = () => {
       lineBox.scrollTop = textarea.scrollTop;
     };
 
     textarea.addEventListener("scroll", syncScroll);
     return () => textarea.removeEventListener("scroll", syncScroll);
-  }, []);
+  }, [textInputFieldRef.current, lineNumbersRef.current]);
 
   /* ================= DRAG DROP ================= */
 
   useEffect(() => {
     const container = fileContainerRef.current;
+    if (!container) return;
 
     const handleDrop = (e) => {
       e.preventDefault();
@@ -330,11 +379,16 @@ function ClipField() {
       Array.from(files).forEach((file) => fileHandler(file));
     };
 
-    container.addEventListener("dragover", (e) => e.preventDefault());
+    const preventDefault = (e) => e.preventDefault();
+
+    container.addEventListener("dragover", preventDefault);
     container.addEventListener("drop", handleDrop);
 
-    return () => container.removeEventListener("drop", handleDrop);
-  }, []);
+    return () => {
+      container.removeEventListener("dragover", preventDefault);
+      container.removeEventListener("drop", handleDrop);
+    };
+  }, [fileContainerRef.current]);
 
   /* ================= RENDER ================= */
 
@@ -350,6 +404,8 @@ function ClipField() {
       >
         <TextEditor
           theme={theme}
+          value={textValue}
+          onValueChange={handleValueChange}
           wordCount={wordCount}
           letterCount={letterCount}
           handleSelectAll={handleSelectAll}

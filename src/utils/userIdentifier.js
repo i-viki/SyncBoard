@@ -23,6 +23,18 @@ export function userIdentifier() {
   return uuid;
 }
 
+export function sessionIdentifier() {
+  const SESSION_KEY = "session_uuid";
+  let uuid = sessionStorage.getItem(SESSION_KEY);
+
+  if (!uuid) {
+    uuid = generateUUID();
+    sessionStorage.setItem(SESSION_KEY, uuid);
+  }
+
+  return uuid;
+}
+
 export async function userMetadata() {
   let meta = localStorage.getItem(META_KEY);
 

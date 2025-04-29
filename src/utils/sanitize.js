@@ -1,29 +1,32 @@
 /**
- * Sanitize a string by removing invalid characters and file extensions.
- * Allowed characters: letters (a-z, A-Z), numbers (0-9), and hyphens (-).
- *
- * @param {string} str - The input string to be sanitized.
- * @returns {string} - The sanitized string, or an "unknown" string if the input is invalid.
+ * Sanitize a string for use as a Cloudinary public ID (removes extensions and dots).
+ * @param {string} str - The input string.
+ * @returns {string} - The sanitized string.
  */
 export function sanitizeString(str) {
-  if (typeof str !== "string") {
-    return ""; // Return empty if input is not a string
-  }
+  if (typeof str !== "string") return "";
 
-  // Check if the string has a file extension by looking for a '.' followed by at least one character
-  const hasFileExtension =
-    str.lastIndexOf(".") > 0 && str.lastIndexOf(".") < str.length - 1;
-
+  const hasFileExtension = str.lastIndexOf(".") > 0 && str.lastIndexOf(".") < str.length - 1;
   let baseName = str;
-
   if (hasFileExtension) {
-    // Remove the file extension if it exists
     baseName = str.substring(0, str.lastIndexOf("."));
   }
 
-  // Remove invalid characters
+  // Allow only alphanumeric and hyphens for public IDs
   let sanitized = baseName.replace(/[^a-zA-Z0-9-]/g, "");
-
-  // Return sanitized string or an empty string if nothing is left
   return sanitized || "unknown";
+}
+
+/**
+ * Sanitize a filename for downloads (preserves the extension and dots).
+ * @param {string} str - The input filename.
+ * @returns {string} - The sanitized filename.
+ */
+export function sanitizeFileName(str) {
+  if (typeof str !== "string") return "file";
+
+  // Replace spaces with hyphens, remove illegal filename characters but keep dots and hyphens
+  let sanitized = str.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9.-]/g, "");
+  
+  return sanitized || "file";
 }

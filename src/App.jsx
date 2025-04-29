@@ -18,8 +18,10 @@ import "./App.css";
 
 function App({ toggleTheme, mode }) {
   const location = useLocation();
-
-  const isClipboardRoute = /^\/[A-Za-z0-9]{5}$/.test(location.pathname);
+  
+  // A clipboard route is exactly 5 characters long and alpha-numeric (excluding the leading slash)
+  const path = location.pathname.substring(1);
+  const isClipboardRoute = /^[A-Za-z0-9]{5}$/.test(path);
 
   return (
     <Box

@@ -6,13 +6,20 @@ import {
     Stack,
     Button,
     Chip,
+    IconButton,
 } from "@mui/material";
 import { TailSpin } from "react-loader-spinner";
-import { FileUp, FileText, FileImage, FileVideo, FileAudio, File } from "lucide-react";
+import {
+    FileUp,
+    FileText,
+    FileImage,
+    FileVideo,
+    FileAudio,
+    File,
+    Trash2,
+    Download,
+} from "lucide-react";
 
-/**
- * Returns an appropriate icon component based on file MIME type
- */
 const getFileIcon = (fileType) => {
     if (!fileType) return File;
     if (fileType.startsWith("image/")) return FileImage;
@@ -23,9 +30,6 @@ const getFileIcon = (fileType) => {
     return File;
 };
 
-/**
- * Formats byte size into a human-readable string
- */
 const formatFileSize = (bytes) => {
     if (!bytes) return "";
     if (bytes < 1024) return `${bytes} B`;
@@ -33,15 +37,91 @@ const formatFileSize = (bytes) => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-/**
- * Checks whether a file is an image based on its type or name
- */
 const isImageFile = (file) => {
     if (file.isImage) return true;
     if (file.fileType && file.fileType.startsWith("image/")) return true;
     const ext = file.name?.split(".").pop()?.toLowerCase();
     return ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico"].includes(ext);
 };
+
+function FileItem({ file, theme, loader, handleDownloadFile, handleDeleteFile, isBoardInteractionDisabled }) {
+    const isImage = isImageFile(file);
+    const FileIcon = getFileIcon(file.type || file.fileType);
+
+    return (
+        <Box
+            sx={{
+                p: 1.5,
+                borderRadius: 2,
+                border: `1px solid ${theme.palette.divider}`,
+                backgroundColor: theme.palette.action.hover,
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                mb: 1.5,
+                transition: "0.2s",
+                "&:hover": {
+                    borderColor: theme.palette.primary.main,
+                }
+            }}
+        >
+            <Box
+                sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 1,
+                    bgcolor: "background.paper",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                }}
+            >
+                {isImage && file.src ? (
+                    <img
+                        src={file.src}
+                        alt={file.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                ) : (
+                    <FileIcon size={24} color={theme.palette.primary.main} />
+                )}
+            </Box>
+
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                    variant="body2"
+                    noWrap
+                    sx={{ fontWeight: 600 }}
+                >
+                    {file.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                    {formatFileSize(file.bytes)}
+                </Typography>
+            </Box>
+
+            <Stack direction="row" spacing={0.5}>
+                <IconButton
+                    size="small"
+                    onClick={() => handleDownloadFile(file.src, file.name)}
+                    sx={{ color: "primary.main" }}
+                >
+                    <Download size={18} />
+                </IconButton>
+                <IconButton
+                    size="small"
+                    color="error"
+                    disabled={isBoardInteractionDisabled}
+                    onClick={() => handleDeleteFile(file.src)}
+                >
+                    <Trash2 size={18} />
+                </IconButton>
+            </Stack>
+        </Box>
+    );
+}
 
 function FilePanel({
     theme,
@@ -52,224 +132,103 @@ function FilePanel({
     fileHandler,
     handleDownloadFile,
     handleDeleteFile,
-    isLockDisabled,
     isBoardInteractionDisabled,
 }) {
-    const currentFile = files.length === 1 ? files[0] : null;
-    const isImage = currentFile ? isImageFile(currentFile) : false;
-    const FileIcon = currentFile ? getFileIcon(currentFile.type || currentFile.fileType) : FileUp;
-
     return (
         <Paper
-            elevation={0}
+            elevation={3}
             sx={{
-                flex: { xs: "40vh", md: 3 },
+                flex: { xs: "50vh", md: 3 },
                 width: { xs: "100%", md: "auto" },
-                mt: { xs: 2, md: 0 },
                 display: "flex",
                 flexDirection: "column",
                 borderRadius: 2,
                 p: 2,
                 backgroundColor: theme.palette.background.paper,
-                border: (theme) =>
-                    `1px solid ${theme.palette.divider}`,
+                overflow: "hidden"
             }}
         >
-            <Typography variant="subtitle2" mb={2}>
-                File Upload
-            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Typography variant="subtitle2" fontWeight={600}>
+                    Board Files
+                </Typography>
+                <Chip
+                    label={`${files.length}/5`}
+                    size="small"
+                    variant="outlined"
+                    sx={{ fontWeight: 600, fontSize: 11 }}
+                />
+            </Box>
 
+            {/* Drop Zone */}
             <Box
                 ref={fileContainerRef}
-                onClick={() => {
-                    if (!isBoardInteractionDisabled) {
-                        uploadBtnRef.current.click();
-                    }
-                }}
+                onClick={() => !isBoardInteractionDisabled && uploadBtnRef.current.click()}
                 sx={{
-
-                    pointerEvents: isBoardInteractionDisabled ? "none" : "auto",
-                    opacity: isBoardInteractionDisabled ? 0.6 : 1,
-
-
-
-                    flex: 1,
                     border: "2px dashed",
                     borderColor: theme.palette.divider,
                     borderRadius: 2,
-                    p: 3,
+                    p: 2,
                     textAlign: "center",
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    transition: "0.25s",
-                    overflow: "hidden",
+                    cursor: isBoardInteractionDisabled ? "default" : "pointer",
+                    backgroundColor: theme.palette.action.hover,
+                    transition: "0.2s",
+                    opacity: isBoardInteractionDisabled ? 0.6 : 1,
                     "&:hover": {
-                        borderColor: theme.palette.primary.main,
-                        backgroundColor: theme.palette.action.hover,
+                        borderColor: isBoardInteractionDisabled ? theme.palette.divider : theme.palette.primary.main,
+                        backgroundColor: isBoardInteractionDisabled ? theme.palette.action.hover : "rgba(0,0,0,0.02)",
                     },
+                    mb: 3
                 }}
             >
                 <input
-                    disabled={isBoardInteractionDisabled}
                     type="file"
                     hidden
                     ref={uploadBtnRef}
-                    accept="*/*"
                     onChange={(e) => fileHandler(e.target.files[0])}
+                    disabled={isBoardInteractionDisabled}
                 />
 
-                {files.length === 0 && (
+                {loader ? (
+                    <Box sx={{ py: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+                        <TailSpin height="30" width="30" color={theme.palette.primary.main} />
+                        <Typography variant="caption">Uploading...</Typography>
+                    </Box>
+                ) : (
                     <>
-                        <FileUp
-                            size={40}
-                            strokeWidth={1.5}
-                            style={{ opacity: 0.5, marginBottom: 8 }}
-                        />
-                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                            Select, paste or drop any file here
-                        </Typography>
-                        <Typography variant="caption" sx={{ mt: 1, opacity: 0.5 }}>
-                            Max 10MB • One file at a time
-                        </Typography>
-                        <Typography variant="caption" sx={{ mt: 0.5, opacity: 0.4 }}>
-                            Images, PDFs, documents, videos, and more
+                        <FileUp size={24} style={{ opacity: 0.6, marginBottom: 4 }} />
+                        <Typography variant="caption" display="block">
+                            Drop files here or click to upload
                         </Typography>
                     </>
                 )}
+            </Box>
 
-                {currentFile && (
-                    <Stack spacing={2} alignItems="center" sx={{ width: "100%", maxWidth: "280px" }}>
-                        <Box sx={{ position: "relative", width: "100%" }}>
-                            {isImage ? (
-                                /* Image preview */
-                                <img
-                                    src={currentFile.src}
-                                    alt={currentFile.name}
-                                    style={{
-                                        width: "100%",
-                                        maxHeight: "220px",
-                                        objectFit: "contain",
-                                        borderRadius: 8,
-                                        transition: "0.3s ease",
-                                        filter: loader ? "blur(6px)" : "none",
-                                        opacity: loader ? 0.7 : 1,
-                                    }}
-                                />
-                            ) : (
-                                /* Non-image file card */
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        p: 3,
-                                        borderRadius: 2,
-                                        backgroundColor: theme.palette.action.hover,
-                                        transition: "0.3s ease",
-                                        filter: loader ? "blur(6px)" : "none",
-                                        opacity: loader ? 0.7 : 1,
-                                    }}
-                                >
-                                    <FileIcon
-                                        size={48}
-                                        strokeWidth={1.5}
-                                        color={theme.palette.primary.main}
-                                    />
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            mt: 1.5,
-                                            fontWeight: 500,
-                                            wordBreak: "break-word",
-                                            textAlign: "center",
-                                            maxWidth: "100%",
-                                        }}
-                                    >
-                                        {currentFile.name}
-                                    </Typography>
-                                    <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                                        {currentFile.type && (
-                                            <Chip
-                                                label={currentFile.name?.split(".").pop()?.toUpperCase() || "FILE"}
-                                                size="small"
-                                                variant="outlined"
-                                                sx={{ fontSize: "0.7rem" }}
-                                            />
-                                        )}
-                                        {currentFile.bytes && (
-                                            <Chip
-                                                label={formatFileSize(currentFile.bytes)}
-                                                size="small"
-                                                variant="outlined"
-                                                sx={{ fontSize: "0.7rem" }}
-                                            />
-                                        )}
-                                    </Stack>
-                                </Box>
-                            )}
-
-                            {loader && (
-                                <Box
-                                    sx={{
-                                        position: "absolute",
-                                        inset: 0,
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        backdropFilter: "brightness(0.8)",
-                                        borderRadius: 2,
-                                    }}
-                                >
-                                    <TailSpin
-                                        height="60"
-                                        width="60"
-                                        color="#42a5f5"
-                                        ariaLabel="uploading"
-                                    />
-                                </Box>
-                            )}
-                        </Box>
-
-                        {!loader && (
-                            <Stack direction="row" spacing={1}>
-                                <Button
-                                    variant="contained"
-                                    size="small"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDownloadFile(currentFile.src, currentFile.name);
-                                    }}
-                                >
-                                    Download
-                                </Button>
-
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    color="error"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteFile(currentFile.src);
-                                    }}
-                                >
-                                    Delete
-                                </Button>
-                            </Stack>
-                        )}
-                    </Stack>
+            {/* File List */}
+            <Box sx={{ flex: 1, overflowY: "auto", pr: 0.5 }}>
+                {files.length === 0 ? (
+                    <Box sx={{ py: 4, textAlign: "center", opacity: 0.4 }}>
+                        <Typography variant="body2">No files shared yet</Typography>
+                    </Box>
+                ) : (
+                    files.map((file, index) => (
+                        <FileItem
+                            key={index}
+                            file={file}
+                            theme={theme}
+                            handleDownloadFile={handleDownloadFile}
+                            handleDeleteFile={handleDeleteFile}
+                            isBoardInteractionDisabled={isBoardInteractionDisabled}
+                        />
+                    ))
                 )}
             </Box>
 
-            <Typography variant="caption" sx={{ mt: 2, opacity: 0.6 }}>
-                Note: Only one file can be shared at a time.
-                Delete the current file before uploading a new one.
+            <Typography variant="caption" sx={{ mt: 2, opacity: 0.5, fontSize: 10 }}>
+                Files up to 10MB are instantly synced with all active board members.
             </Typography>
         </Paper>
     );
 }
 
-export default FilePanel;
+export default React.memo(FilePanel);

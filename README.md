@@ -24,19 +24,33 @@
 ## Core Features
 
 ### Real-Time Synchronization
-Experience zero-latency collaboration. Text entered into a board is instantly synchronized across all active participants using the same 5-character board code. Powered by Firebase Realtime Database for true live updates.
+Experience zero-latency collaboration. Text entered into a board is instantly synchronized across all active participants using the same 5-character board code.
+- **Performance Optimized**: Uses a 500ms debounced syncing engine to ensure database stability even during fast typing.
 
-### Universal File Sharing
-SyncBoard supports the upload and sharing of any file type (Images, PDFs, Documents, Videos, etc.) up to **10MB**. 
-- **Drag & Drop**: Seamlessly drop files into the board for instant sharing.
-- **Cloudinary Integration**: High-speed global delivery and secure storage for shared assets.
-- **Single Slot**: To maintain focus and performance, each board hosts one active file at a time.
+### Collaborative Presence
+Know who's online. Real-time indicators show exactly how many users are currently active on the board, ensuring you never collaborate in the dark.
+
+### Universal File Gallery
+SyncBoard supports sharing up to **5 files** simultaneously.
+- **Any Format**: Images, PDFs, Documents, Videos, and more (up to 10MB per file).
+- **Hardened Downloads**: Advanced fetch-based blob download system for reliable transfers with correct names and extensions.
+- **Gallery View**: Professional grid/list layout for managing multiple assets.
+- **Drag & Drop**: Seamlessly drop files into the board for instant syncing.
+
+### Self-Destruct Timer
+Enhanced privacy with ephemeral sessions. Set a countdown timer (10m, 1h, 24h) to automatically clear the board's text and files once the time expires.
+
+### Syntax Highlighting Editor
+A professional-grade editing experience. 
+- **Smart Auto-Detect**: Intelligent engine automatically identifies JavaScript, Python, Java, HTML, CSS, Markdown, and JSON.
+- **Rich Highlighting**: Professional syntax coloring powered by PrismJS.
+- **Language Selector**: Instantly switch highlighting modes for different code formats.
+- **Metrics**: Integrated word, character, and line counts.
 
 ### Board Security & Privacy
-While SyncBoard is built for anonymity, it doesn't compromise on security:
 - **Locking Mechanism**: Secure any board with a **6-digit PIN** using SHA-256 hashing.
 - **Interaction Control**: Once locked, board editing is disabled for anyone without the correct PIN.
-- **Anonymity**: No accounts, no email requirements, and no tracking of personal identifiable information.
+- **QR Code Sharing**: Generate a scannable code to instantly open boards on mobile devices.
 
 ### Progressive Web App (PWA)
 Install SyncBoard on your desktop or mobile device for a native-like experience. Includes offline detection and update notification services to ensure you're always on the latest version.
@@ -59,7 +73,7 @@ src/
 │   ├── common/      # Reusable UI (Navbar, Footer, Modals)
 │   └── features/    # Core logic components (TextEditor, FilePanel)
 ├── services/        # Logic for Firebase, Cloudinary, and Analytics
-├── utils/           # Helper functions (Sanitization, User ID)
+├── utils/           # Helper functions (Sanitization, User ID, PIN Hashing)
 ├── constants/       # Static content, FAQs, and Developer data
 ├── config/          # Centralized configuration (Firebase init)
 ├── pages/           # Route-level components
@@ -71,8 +85,8 @@ src/
 ## Technology Stack
 
 - **Frontend**: React 18 with Vite for lightning-fast builds.
-- **Styling**: Material UI (MUI) with a custom dual-mode (Dark/Light) theme engine.
-- **Database**: Firebase Realtime Database for live sync logic.
+- **Styling**: Material UI (MUI) with a custom handcrafted "Elite" theme engine.
+- **Database**: Firebase Realtime Database with debounced syncing.
 - **Storage**: Cloudinary for optimized file management and delivery.
 - **Communication**: EmailJS for reliable feedback and contact management.
 - **Analytics**: Firebase Analytics for anonymous usage insights.

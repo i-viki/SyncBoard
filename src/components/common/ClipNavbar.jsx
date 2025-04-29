@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,9 +9,11 @@ import {
   Container,
   Button,
 } from "@mui/material";
+import QrCode2Icon from "@mui/icons-material/QrCode2";
+import PeopleIcon from "@mui/icons-material/People";
 import ShareIcon from '@mui/icons-material/Share';
 import { styled } from "@mui/material/styles";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { appDatabase } from "../../config/firebase";
 import { ref, onDisconnect, onValue } from "firebase/database";
 import { clickLogging } from "../../services/analyticsService";
@@ -22,6 +24,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import QRCodeModal from "./QRCodeModal";
+import SelfDestructTimer from "../features/SelfDestructTimer";
+import { trackPresence, listenToPresence, getRoomRef } from "../../services/firebaseService";
+import { userIdentifier, sessionIdentifier } from "../../utils/userIdentifier";
 
 const GlassToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -53,8 +59,13 @@ export default function ClipNavbar({ internetStatus,
   const navigate = useNavigate();
   const { code } = useParams();
   const [status, setStatus] = useState("Connecting...");
-  const database = appDatabase;
-  const roomRef = ref(database, `/${code}`);
+  const roomRef = useMemo(() => getRoomRef(code), [code]);
+
+  const [qrOpen, setQrOpen] = useState(false);
+  const [activeUsers, setActiveUsers] = useState(0);
+  const [roomData, setRoomData] = useState({});
+  const USER_UUID = userIdentifier();
+  const SESSION_ID = sessionIdentifier();
 
   // Validate room code
   useEffect(() => {
@@ -64,15 +75,36 @@ export default function ClipNavbar({ internetStatus,
     }
   }, [code, navigate]);
 
-  // Connection status
+  // Connection status & Presence
   useEffect(() => {
     onDisconnect(roomRef);
-    const connectionStatusRef = ref(database, ".info/connected");
+    const connectionStatusRef = ref(appDatabase, ".info/connected");
     onValue(connectionStatusRef, (snapshot) => {
       const isConnected = snapshot.val();
       setStatus(isConnected ? "Connected" : "Connecting...");
     });
-  }, [database, roomRef]);
+
+    // Track this session's presence
+    const unsubTrack = trackPresence(code, SESSION_ID);
+
+    // Listen to total active users
+    const unsubPresence = listenToPresence(code, (count) => {
+      setActiveUsers(count);
+    });
+
+    // Listen to room data for expiration
+    const unsubRoom = onValue(roomRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setRoomData(snapshot.val());
+      }
+    });
+
+    return () => {
+      unsubPresence();
+      unsubRoom();
+      unsubTrack();
+    };
+  }, [roomRef, code, SESSION_ID]);
 
   const handleCopyCode = () => {
     const url = `https://isyncboard.vercel.app/${code}`;
@@ -124,7 +156,20 @@ export default function ClipNavbar({ internetStatus,
               justifyContent: "space-between",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box 
+              onClick={() => {
+                navigate("/");
+                setMobileOpen(false);
+              }}
+              sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 1, 
+                textDecoration: "none", 
+                color: "inherit",
+                cursor: "pointer"
+              }}
+            >
               <Box
                 component="img"
                 src="/assets/pasteboard_logo.png"
@@ -222,14 +267,14 @@ export default function ClipNavbar({ internetStatus,
           {/* Left Side */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Box
-              component={Link}
-              to="/"
+              onClick={() => navigate("/")}
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 1,
+                gap: "8px",
                 textDecoration: "none",
-                color: "text.primary",
+                color: "inherit",
+                cursor: "pointer"
               }}
             >
               <Box
@@ -265,6 +310,19 @@ export default function ClipNavbar({ internetStatus,
               }
               size="small"
             />
+
+            <Chip
+              icon={<PeopleIcon sx={{ fontSize: "14px !important" }} />}
+              label={`${activeUsers} active`}
+              size="small"
+              variant="outlined"
+              sx={{ fontWeight: 600 }}
+            />
+
+            <SelfDestructTimer
+              code={code}
+              expirationTime={roomData?.expirationTime}
+            />
           </Box>
 
           {/* Right Side – Pill */}
@@ -293,6 +351,10 @@ export default function ClipNavbar({ internetStatus,
               <ShareIcon fontSize="small" />
             </IconButton>
 
+            <IconButton onClick={() => setQrOpen(true)} size="small">
+              <QrCode2Icon fontSize="small" />
+            </IconButton>
+
             <IconButton onClick={toggleTheme} size="small">
               {mode === "dark" ? (
                 <DarkModeIcon fontSize="small" />
@@ -311,6 +373,13 @@ export default function ClipNavbar({ internetStatus,
           </IconButton>
         </GlassToolbar>
       </Container>
+      
+      <QRCodeModal 
+        open={qrOpen} 
+        onClose={() => setQrOpen(false)} 
+        url={`https://isyncboard.vercel.app/${code}`}
+        code={code}
+      />
     </AppBar>
   );
 }

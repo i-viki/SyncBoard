@@ -2,56 +2,71 @@ export const frequentlyAskedQuestionsList = [
   {
     question: "How do I start using SyncBoard?",
     answer:
-      "Visit the homepage and click 'Create Board' to generate a unique board instantly. No account, setup, or installation is required.",
+      "Simply visit the homepage and click 'Create Board'. You'll get a unique 5-character code instantly. No sign-ups or email required.",
   },
   {
-    question: "Do I need to create an account?",
+    question: "Is it really anonymous?",
     answer:
-      "No. SyncBoard operates anonymously. You can create or join a board instantly without registration.",
+      "Yes. We don't use accounts, profiles, or tracking. Your identity is generated locally and never linked to your personal data.",
   },
   {
-    question: "How does real-time sharing work?",
+    question: "How many files can I share?",
     answer:
-      "Content entered into a board is instantly synchronized across all participants using that same board code. Updates appear immediately without page refresh.",
+      "Each board has 5 asset slots. You can upload images, PDFs, code files, or videos up to 10MB each. When a slot is full, you can delete old assets to make room for new ones.",
   },
   {
-    question: "Can I share the board with others?",
+    question: "How secure are my boards?",
     answer:
-      "Yes. Simply share the 5-character board code or the full URL. Anyone with the code can join and collaborate in real time.",
+      "While boards are private by default via their unique code, you can enable 'Board Lock' with a custom 6-digit PIN. This prevents anyone else from editing your text or uploading/deleting files.",
   },
   {
-    question: "Is my data stored permanently?",
+    question: "Does the text editor support coding?",
     answer:
-      "No personal data is stored. Content shared inside a board is designed for real-time collaboration and is not retained long-term.",
+      "Absolutely. Our editor features high-precision 'Smart Language Detection' for JavaScript, Python, Java, HTML, CSS, and more. It automatically applies syntax highlighting as you type.",
   },
   {
-    question: "What devices are supported?",
+    question: "How long does a board last?",
     answer:
-      "SyncBoard works on modern browsers across desktops, tablets, and smartphones. No app installation is required.",
+      "Boards are designed for active collaboration. You can see the remaining time on the 'Self-Destruct Timer' in the navbar. Once the timer hits zero, the board is automatically wiped clean for privacy.",
   },
   {
-    question: "Are there content restrictions?",
+    question: "Is there a real-time sync limit?",
     answer:
-      "Users must comply with applicable laws. Illegal, harmful, or abusive content is not permitted.",
+      "SyncBoard is built for speed. Changes sync in under 500ms across all connected devices, regardless of where the participants are located.",
   },
   {
-    question: "Is SyncBoard secure?",
+    question: "Can I use SyncBoard on my phone?",
     answer:
-      "Boards are accessible only through their unique code. We implement secure infrastructure practices to protect real-time collaboration sessions.",
+      "Yes! SyncBoard is fully responsive and works perfectly on mobile browsers. You can even use it to quickly transfer text or images between your computer and phone.",
   },
   {
-    question: "How can I report issues or give feedback?",
+    question: "Is my data stored forever?",
     answer:
-      "You can contact us anytime through the feedback form available on the website.",
+      "No. We prioritize your privacy. Content is temporary and is permanently deleted once the board expires or is manually cleared. We do not maintain long-term archives of board data.",
   },
   {
-  question: "Can I upload files?",
-  answer:
-    "Yes. You can upload or drop any file (images, PDFs, documents, videos, and more) — one file per board at a time. Files are instantly shared with all participants inside the same board.",
-},
-{
-  question: "Is there a file size limit for uploads?",
-  answer:
-    "Yes. Files are limited to 10MB to ensure fast synchronization and optimal performance across devices.",
-},
+    question: "How many people can join a board?",
+    answer:
+      "There is no hard limit! SyncBoard is built for small teams and large groups alike. Everyone with the code can see updates and collaborate simultaneously.",
+  },
+  {
+    question: "What happens if I lose my internet connection?",
+    answer:
+      "SyncBoard monitors your connectivity in real time. If you go offline, a status indicator will alert you. Your local changes will be preserved, and you can re-sync as soon as your connection is restored.",
+  },
+  {
+    question: "Is SyncBoard free to use?",
+    answer:
+      "Yes, SyncBoard is completely free to use. We built this as a tool for the community to make instant sharing as frictionless as possible.",
+  },
+  {
+    question: "Does it support Dark Mode?",
+    answer:
+      "Yes! You can toggle between Light and Dark modes using the icon in the navbar. The editor and UI will instantly adapt to your preference.",
+  },
+  {
+    question: "How can I suggest new features?",
+    answer:
+      "We love hearing from our users! Head over to the Feedback page to share your ideas, bug reports, or just to say hi.",
+  },
 ];
