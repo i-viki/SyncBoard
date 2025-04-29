@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Basic -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+  <!-- Primary SEO -->
+  <title>
+    SyncBoard | Online Clipboard for Teams & Real-Time Collaboration
+  </title>
+
+  <meta name="description"
+    content="SyncBoard is an online clipboard for teams that enables real-time text sharing across devices. A fast, secure, and collaborative board built for developers, remote teams, and productivity workflows." />
+
+  <meta name="keywords"
+    content="online clipboard for teams, real-time clipboard, shared clipboard between devices, collaborative board tool, live text sharing, developer collaboration tool" />
+
+  <meta name="author" content="SyncBoard" />
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://isyncboard.vercel.app/" />
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#1D3557" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SyncBoard" />
+  <meta property="og:title" content="SyncBoard | Online Clipboard for Teams" />
+  <meta property="og:description"
+    content="Share text instantly across devices with SyncBoard — a real-time online clipboard built for teams and developers." />
+  <meta property="og:url" content="https://isyncboard.vercel.app/" />
+  <meta property="og:image" content="https://isyncboard.vercel.app/og-image.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@SyncBoard" />
+  <meta name="twitter:title" content="Online Clipboard for Teams | SyncBoard" />
+  <meta name="twitter:description"
+    content="A real-time shared clipboard and collaborative board for seamless team productivity." />
+  <meta name="twitter:image" content="https://isyncboard.vercel.app/og-image.png" />
+
+  <!-- Favicons -->
+  <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SyncBoard",
+        "url": "https://isyncboard.vercel.app/",
+        "description": "SyncBoard is an online clipboard for teams that enables real-time text sharing and collaboration across devices.",
+        "applicationCategory": "CollaborationApplication",
+        "operatingSystem": "All",
+        "creator": {
+          "@type": "Organization",
+          "name": "SyncBoard"
+        },
+        "featureList": [
+          "Real-time text sharing",
+          "Shared clipboard between devices",
+          "Collaborative board",
+          "Instant synchronization",
+          "Secure team collaboration"
+        ]
+      }
+    </script>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run SyncBoard.</noscript>
+  <meta name="color-scheme" content="light dark">
+
+<!-- <script>
+  const saved = localStorage.getItem("themeMode");
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const mode = saved || (systemDark ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", mode);
+</script> -->
+  <div id="sync-board"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>
