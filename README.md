@@ -8,6 +8,8 @@
 ![Performance](https://img.shields.io/badge/Latency-Ultra--Low-orange?style=flat)
 ![UX](https://img.shields.io/badge/UI-Elite_Design_System-FF69B4?style=flat)
 
+Developed with ☕
+
 ![Vite](https://img.shields.io/badge/Built_with-Vite-B73BFE?style=flat&logo=vite&logoColor=white)
 ![React](https://img.shields.io/badge/Library-React-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![MUI](https://img.shields.io/badge/UI-Material%20UI-007FFF?style=flat&logo=mui&logoColor=white)
