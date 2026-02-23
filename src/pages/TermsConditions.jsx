@@ -39,7 +39,7 @@ function TermsConditions() {
               Terms & Conditions
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Last updated: March 2026
+              Last updated: February 2026
             </Typography>
             <Typography
               variant="body1"

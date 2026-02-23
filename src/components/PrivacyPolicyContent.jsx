@@ -13,7 +13,7 @@ function PrivacyPolicyContent() {
   return (
     <Box>
       <Typography variant="body2" color="text.secondary" gutterBottom>
-        <strong>Effective Date:</strong> 01 September 2024
+        <strong>Effective Date:</strong> 23 February 2026
       </Typography>
 
       <Typography paragraph>
