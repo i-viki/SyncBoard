@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
@@ -56,6 +57,8 @@ function App({ toggleTheme, mode }) {
 
       {/* Footer (hide for clipboard route if you want full editor experience) */}
       {!isClipboardRoute && <Footer />}
+      
+      <SpeedInsights />
     </Box>
   );
 }
