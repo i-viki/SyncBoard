@@ -25,6 +25,7 @@ import {
 import { useParams } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
 import { toast } from "sonner";
+import { useLanguageDetection } from "../../hooks/useLanguageDetection";
 
 import Prism from "prismjs";
 import "../../prism.css";
@@ -38,6 +39,14 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-python";
 import "prismjs/components/prism-markdown";
 import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-go";
+import "prismjs/components/prism-markup-templating";
+import "prismjs/components/prism-php";
+import "prismjs/components/prism-sql";
+import "prismjs/components/prism-ruby";
+import "prismjs/components/prism-yaml";
 
 const LANGUAGES = [
     { label: "Auto-Detect", value: "auto" },
@@ -48,6 +57,12 @@ const LANGUAGES = [
     { label: "CSS", value: "css" },
     { label: "Python", value: "python" },
     { label: "Java", value: "java" },
+    { label: "C++", value: "cpp" },
+    { label: "Go", value: "go" },
+    { label: "PHP", value: "php" },
+    { label: "SQL", value: "sql" },
+    { label: "Ruby", value: "ruby" },
+    { label: "YAML", value: "yaml" },
     { label: "Markdown", value: "markdown" },
 ];
 
@@ -69,13 +84,15 @@ function TextEditor({
 }) {
     const [openToast, setOpenToast] = useState(false);
     const [language, setLanguage] = useState("auto");
-    const [detectedLanguage, setDetectedLanguage] = useState("plain");
     const { code } = useParams();
     const preRef = useRef(null);
 
     // Internal state for immediate UI feedback (Debounced Firebase sync)
     const [localValue, setLocalValue] = useState(value);
     const debounceTimer = useRef(null);
+    const detectedLanguage = useLanguageDetection(localValue, language);
+
+    const activeLanguage = language === "auto" ? detectedLanguage : language;
 
     // Sync local value with incoming remote changes
     useEffect(() => {
@@ -101,88 +118,6 @@ function TextEditor({
             debounceTimer.current = null;
         }, delay);
     };
-
-    // Precise Auto-detection logic using a scoring system
-    useEffect(() => {
-        if (language !== "auto") return;
-
-        const detect = (text) => {
-            if (!text.trim()) return "plain";
-
-            const scores = {
-                javascript: 0,
-                python: 0,
-                java: 0,
-                html: 0,
-                css: 0,
-                json: 0,
-                markdown: 0
-            };
-
-            // JavaScript patterns
-            if (/\b(const|let|var|function|export|import|return|await|async)\b/.test(text)) scores.javascript += 2;
-            if (/\b(console\.log|window|document|React|useEffect|useState)\b/.test(text)) scores.javascript += 3;
-            if (/\s=>\s/.test(text)) scores.javascript += 2;
-            if (/[;{}]/.test(text)) scores.javascript += 1;
-
-            // Python patterns
-            if (/\b(def|elif|from|import|print|while|if __name__)\b/.test(text)) scores.python += 2;
-            if (/:$/m.test(text)) scores.python += 2;
-            if (/\b(pip install|f"|f')/.test(text)) scores.python += 3;
-            // Java patterns
-            if (/\b(public|private|protected|static|void|class|interface|extends|implements|throws|new)\b/.test(text)) scores.java += 1;
-            if (/\b(System\.out\.print|String\[\] args|@Override|@Nullable|@NonNull)\b/.test(text)) scores.java += 5;
-            if (/\b(public class|public static void main)\b/.test(text)) scores.java += 10;
-            if (/[;{}]/.test(text)) scores.java += 1;
-
-            // Python patterns
-            if (/\b(def|elif|from|import|print|while|if __name__|yield|lambda|pass|with)\b/.test(text)) scores.python += 3;
-            if (/:$/m.test(text)) scores.python += 2;
-            if (/\b(pip install|f"|f')/.test(text)) scores.python += 4;
-
-            // Only give "no-braces" points if there's already some Python evidence
-            if (!/[;{}]/.test(text) && scores.python > 0) scores.python += 1;
-
-            // HTML patterns
-            if (/<(!DOCTYPE|html|head|body|div|span|p|a|script|link|style)\b/i.test(text)) scores.html += 6;
-            if (/<\/?[a-z][^>]*>/i.test(text)) scores.html += 3;
-            if (/&[a-z]+;/i.test(text)) scores.html += 1;
-
-            // CSS patterns
-            if (/\b(margin|padding|color|background|display|flex|position|border|font-family)\b\s*:/.test(text)) scores.css += 5;
-            if (/@(media|keyframes|import|font-face)\b/.test(text)) scores.css += 5;
-            if (/[{}]/.test(text) && !scores.javascript && !scores.java && !scores.html) scores.css += 2;
-
-            // JSON patterns
-            if (/^\s*[\{\[]/.test(text) && /[\}\]]\s*$/.test(text)) scores.json += 6;
-            if (/"[a-zA-Z0-9_]+"\s*:\s*/.test(text)) scores.json += 5;
-
-            // Markdown patterns
-            if (/^(#|##|###|####|#####|######)\s/.test(text)) scores.markdown += 5;
-            if (/\[.*\]\(.*\)/.test(text)) scores.markdown += 5;
-            if (/^(\*|-|\d\.)\s/.test(text)) scores.markdown += 2;
-
-            // Find max score
-            let maxScore = 0;
-            let bestLang = "plain";
-
-            for (const [lang, score] of Object.entries(scores)) {
-                if (score > maxScore) {
-                    maxScore = score;
-                    bestLang = lang;
-                }
-            }
-
-            // Confidence threshold: If no language got a decent score, it's plain text
-            if (maxScore < 3) return "plain";
-
-            return bestLang;
-        };
-
-        setDetectedLanguage(detect(localValue));
-    }, [localValue, language]);
-
-    const activeLanguage = language === "auto" ? detectedLanguage : language;
 
     const handleDownload = () => {
         if (!localValue.trim()) return;

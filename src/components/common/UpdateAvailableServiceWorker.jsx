@@ -62,7 +62,7 @@ function UpdateAvailableServiceWorker() {
               : "A new version of SyncBoard is ready. Update now to get the latest features."}
           </Typography>
 
-          <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
             <Button 
               onClick={close} 
               sx={{ color: "white", opacity: 0.8, textTransform: "none" }}
