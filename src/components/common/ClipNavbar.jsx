@@ -12,19 +12,21 @@ import {
   Divider,
   Stack,
 } from "@mui/material";
-import QrCode2Icon from "@mui/icons-material/QrCode2";
-import PeopleIcon from "@mui/icons-material/People";
-import ShareIcon from '@mui/icons-material/Share';
+import { 
+  QrCode2 as QrCode2Icon, 
+  People as PeopleIcon, 
+  Share as ShareIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
+  Menu as MenuIcon,
+  CloseRounded as CloseRoundedIcon
+} from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router-dom";
 import { appDatabase } from "../../config/firebase";
 import { ref, onDisconnect, onValue } from "firebase/database";
 import { clickLogging } from "../../services/analyticsService";
-import { Toaster, toast } from "sonner";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { toast } from "sonner";
 import QRCodeModal from "./QRCodeModal";
 import SelfDestructTimer from "../features/SelfDestructTimer";
 import { trackPresence, listenToPresence, getRoomRef } from "../../services/firebaseService";
@@ -128,17 +130,19 @@ export default function ClipNavbar({ internetStatus,
         anchor="right"
         open={mobileOpen}
         onClose={toggleDrawer(false)}
-        PaperProps={{
-          sx: {
-            width: 280,
-            backdropFilter: "blur(25px)",
-            WebkitBackdropFilter: "blur(25px)",
-            backgroundColor:
-              mode === "dark"
-                ? "rgba(10, 12, 16, 0.92)"
-                : "rgba(255, 255, 255, 0.95)",
-            borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-            boxShadow: "-10px 0 30px rgba(0,0,0,0.1)",
+        slotProps={{
+          paper: {
+            sx: {
+              width: 280,
+              backdropFilter: "blur(25px)",
+              WebkitBackdropFilter: "blur(25px)",
+              backgroundColor:
+                mode === "dark"
+                  ? "rgba(10, 12, 16, 0.92)"
+                  : "rgba(255, 255, 255, 0.95)",
+              borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+              boxShadow: "-10px 0 30px rgba(0,0,0,0.1)",
+            },
           },
         }}
       >
@@ -189,7 +193,16 @@ export default function ClipNavbar({ internetStatus,
                 src="/assets/pasteboard_logo.png"
                 sx={{ width: 28, height: 28 }}
               />
-              <Typography variant="h6" fontWeight={800} letterSpacing={-0.5}>
+              <Typography variant="h6" sx={{ 
+                fontWeight: 800, 
+                letterSpacing: -0.5,
+                background: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
+                    : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}>
                 SyncBoard
               </Typography>
             </Box>
@@ -228,7 +241,7 @@ export default function ClipNavbar({ internetStatus,
                 }}
                 >
                 <Box>
-                    <Typography variant="h5" fontWeight={800} sx={{ color: "primary.main", letterSpacing: 2 }}>
+                    <Typography variant="h5" sx={{ color: "primary.main", letterSpacing: 2, fontWeight: 800 }}>
                         {code}
                     </Typography>
                     <Typography variant="caption" sx={{ opacity: 0.6 }}>
@@ -263,7 +276,7 @@ export default function ClipNavbar({ internetStatus,
 
                 <Stack spacing={3}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="body2" fontWeight={600}>Status</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>Status</Typography>
                         <Chip
                             label={!internetStatus ? "Offline" : status}
                             color={!internetStatus ? "error" : status === "Connected" ? "success" : "warning"}
@@ -273,7 +286,7 @@ export default function ClipNavbar({ internetStatus,
                     </Box>
 
                     <Box>
-                        <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>Self-Destruct</Typography>
+                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>Self-Destruct</Typography>
                         <SelfDestructTimer
                             code={code}
                             expirationTime={roomData?.expirationTime}
@@ -333,8 +346,14 @@ export default function ClipNavbar({ internetStatus,
               <Typography
                 variant="h6"
                 sx={{
-                  fontWeight: 600,
+                  fontWeight: 700,
                   lineHeight: 1,
+                  background: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
+                      : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
                 }}
               >
                 SyncBoard

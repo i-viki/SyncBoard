@@ -26,11 +26,20 @@ function Footer() {
         <Stack
           direction={{ xs: "column", md: "row" }}
           spacing={2}
-          alignItems="center"
-          justifyContent="space-between"
-          textAlign={{ xs: "center", md: "left" }}
+          sx={{ 
+            alignItems: "center", 
+            justifyContent: "space-between",
+            textAlign: { xs: "center", md: "left" }
+          }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "text.secondary", 
+              fontWeight: 500,
+              opacity: 0.9 
+            }}
+          >
             © SyncBoard {new Date().getFullYear()} · All Rights Reserved
           </Typography>
 
@@ -43,7 +52,11 @@ function Footer() {
               component={RouterLink}
               to="/feedback"
               underline="hover"
-              color="text.secondary"
+              sx={{ 
+                color: "text.secondary",
+                transition: "color 0.2s",
+                "&:hover": { color: "primary.main" }
+              }}
             >
               Contact
             </Link>
@@ -52,7 +65,11 @@ function Footer() {
               component={RouterLink}
               to="/privacy-policy"
               underline="hover"
-              color="text.secondary"
+              sx={{ 
+                color: "text.secondary",
+                transition: "color 0.2s",
+                "&:hover": { color: "primary.main" }
+              }}
             >
               Privacy
             </Link>
@@ -61,7 +78,11 @@ function Footer() {
               component={RouterLink}
               to="/terms-conditions"
               underline="hover"
-              color="text.secondary"
+              sx={{ 
+                color: "text.secondary",
+                transition: "color 0.2s",
+                "&:hover": { color: "primary.main" }
+              }}
             >
               Terms
             </Link>

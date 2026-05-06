@@ -5,7 +5,7 @@ import {
   Tooltip,
   Zoom,
 } from "@mui/material";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { HelpOutlined as HelpOutlineIcon } from "@mui/icons-material";
 
 function FAQsIcon() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ function FAQsIcon() {
   return (
     <Tooltip
       title="Explore FAQs"
-      TransitionComponent={Zoom}
+      slots={{ transition: Zoom }}
       arrow
     >
       <Fab

@@ -12,14 +12,16 @@ import {
     MenuItem,
     FormControl,
 } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import SelectAllIcon from "@mui/icons-material/SelectAll";
-import ContentPasteIcon from "@mui/icons-material/ContentPaste";
-import LockIcon from "@mui/icons-material/Lock";
-import LockOpenIcon from "@mui/icons-material/LockOpen";
-import DownloadIcon from "@mui/icons-material/Download";
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
+import {
+    ContentCopy as ContentCopyIcon,
+    SelectAll as SelectAllIcon,
+    ContentPaste as ContentPasteIcon,
+    Lock as LockIcon,
+    LockOpen as LockOpenIcon,
+    Download as DownloadIcon,
+    AutoAwesome as AutoAwesomeIcon,
+    ClearAll as ClearAllIcon,
+} from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
 import { toast } from "sonner";
@@ -106,7 +108,7 @@ function TextEditor({
 
         const detect = (text) => {
             if (!text.trim()) return "plain";
-            
+
             const scores = {
                 javascript: 0,
                 python: 0,
@@ -131,15 +133,15 @@ function TextEditor({
             if (/\b(public|private|protected|static|void|class|interface|extends|implements|throws|new)\b/.test(text)) scores.java += 1;
             if (/\b(System\.out\.print|String\[\] args|@Override|@Nullable|@NonNull)\b/.test(text)) scores.java += 5;
             if (/\b(public class|public static void main)\b/.test(text)) scores.java += 10;
-            if (/[;{}]/.test(text)) scores.java += 1;            
-            
+            if (/[;{}]/.test(text)) scores.java += 1;
+
             // Python patterns
             if (/\b(def|elif|from|import|print|while|if __name__|yield|lambda|pass|with)\b/.test(text)) scores.python += 3;
             if (/:$/m.test(text)) scores.python += 2;
             if (/\b(pip install|f"|f')/.test(text)) scores.python += 4;
-            
+
             // Only give "no-braces" points if there's already some Python evidence
-            if (!/[;{}]/.test(text) && scores.python > 0) scores.python += 1; 
+            if (!/[;{}]/.test(text) && scores.python > 0) scores.python += 1;
 
             // HTML patterns
             if (/<(!DOCTYPE|html|head|body|div|span|p|a|script|link|style)\b/i.test(text)) scores.html += 6;
@@ -259,12 +261,12 @@ function TextEditor({
                     backgroundColor: theme.palette.action.hover,
                 }}
             >
-                <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center">
-                    <Typography 
-                        variant="caption" 
-                        sx={{ 
-                            fontWeight: 700, 
-                            textTransform: "uppercase", 
+                <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center" }}>
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            fontWeight: 700,
+                            textTransform: "uppercase",
                             letterSpacing: 1,
                             fontSize: { xs: 9, sm: 12 },
                             opacity: 0.8
@@ -272,13 +274,13 @@ function TextEditor({
                     >
                         Editor
                     </Typography>
-                    
+
                     <FormControl size="small" variant="standard">
                         <Select
                             value={language}
                             onChange={(e) => setLanguage(e.target.value)}
-                            sx={{ 
-                                fontSize: 12, 
+                            sx={{
+                                fontSize: 12,
                                 fontWeight: 600,
                                 color: "primary.main",
                                 "&:before, &:after": { border: "none !important" }
@@ -293,31 +295,30 @@ function TextEditor({
                     </FormControl>
 
                     {language === "auto" && (
-                        <Chip 
+                        <Chip
                             icon={<AutoAwesomeIcon style={{ fontSize: 14 }} />}
-                            label={activeLanguage.toUpperCase()} 
-                            size="small" 
+                            label={activeLanguage.toUpperCase()}
+                            size="small"
                             variant="outlined"
                             sx={{ height: 20, fontSize: 10, opacity: 0.8 }}
                         />
                     )}
                 </Stack>
 
-                <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }} alignItems="center">
+                <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }} sx={{ alignItems: "center" }}>
                     <Chip
                         avatar={
                             <Tooltip title="Number of words">
                                 <Avatar
                                     sx={{
-                                        bgcolor: "primary.secondary",
-                                        color: "inherit",
-                                        fontWeight: 600,
+                                        bgcolor: "action.hover",
+                                        color: "text.secondary",
+                                        fontWeight: 700,
                                         fontSize: 12,
+                                        border: (theme) => `1px solid ${theme.palette.divider}`,
                                     }}
                                 >
-                                    <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                                        {wordCount}
-                                    </Typography>
+                                    {wordCount}
                                 </Avatar>
                             </Tooltip>
                         }
@@ -357,9 +358,9 @@ function TextEditor({
                     )}
 
                     <Tooltip title="Clear Board">
-                        <IconButton 
-                            disabled={isBoardInteractionDisabled} 
-                            size="small" 
+                        <IconButton
+                            disabled={isBoardInteractionDisabled}
+                            size="small"
                             onClick={handleClearAll}
                         >
                             <ClearAllIcon fontSize="small" />
@@ -379,13 +380,13 @@ function TextEditor({
             </Box>
 
             {/* Editor Body */}
-            <Box 
-                sx={{ 
-                    display: "flex", 
-                    flex: 1, 
+            <Box
+                sx={{
+                    display: "flex",
+                    flex: 1,
                     overflow: "hidden",
-                    backgroundColor: theme.palette.mode === "dark" 
-                        ? "rgba(0,0,0,0.12)" 
+                    backgroundColor: theme.palette.mode === "dark"
+                        ? "rgba(0,0,0,0.12)"
                         : "rgba(0,0,0,0.02)"
                 }}
             >
@@ -436,7 +437,7 @@ function TextEditor({
                         }}
                         dangerouslySetInnerHTML={{ __html: highlight(localValue) + "\n" }}
                     />
-                    
+
                     {/* The Real Editable Textarea */}
                     <textarea
                         ref={textInputFieldRef}
@@ -475,7 +476,7 @@ function TextEditor({
                     />
                 </Box>
             </Box>
-            
+
             <Snackbar
                 open={openToast}
                 autoHideDuration={3000}

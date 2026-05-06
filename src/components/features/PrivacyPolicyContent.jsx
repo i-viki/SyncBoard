@@ -120,7 +120,7 @@ function PrivacyPolicyContent() {
         },
       ].map((section, index) => (
         <Box key={index} mt={4}>
-          <Typography variant="h5" fontWeight={600} gutterBottom>
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
             {section.title}
           </Typography>
           <Typography paragraph color="text.secondary">
@@ -131,7 +131,7 @@ function PrivacyPolicyContent() {
 
       {/* Contact Section */}
       <Box mt={4}>
-        <Typography variant="h5" fontWeight={600} gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
           20. Contact
         </Typography>
 

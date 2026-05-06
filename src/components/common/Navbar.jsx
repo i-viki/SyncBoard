@@ -12,10 +12,12 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
+import { 
+  Menu as MenuIcon, 
+  CloseRounded as CloseRoundedIcon, 
+  DarkMode as DarkModeIcon, 
+  LightMode as LightModeIcon 
+} from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
 
 
@@ -81,7 +83,16 @@ export default function Navbar({ toggleTheme, mode }) {
                   "&:hover": { transform: "rotate(-6deg) scale(1.05)" },
                 }}
               />
-              <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1 }}>
+              <Typography variant="h6" sx={{ 
+                fontWeight: 700, 
+                lineHeight: 1,
+                background: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
+                    : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}>
                 SyncBoard
               </Typography>
             </Box>
@@ -162,14 +173,16 @@ export default function Navbar({ toggleTheme, mode }) {
               anchor="right"
               open={open}
               onClose={() => toggleDrawer(false)}
-              PaperProps={{
-                sx: {
-                  width: 260,
-                  backdropFilter: "blur(20px)",
-                  backgroundColor:
-                    mode === "dark"
-                      ? "rgba(20, 24, 31, 0.95)"
-                      : "rgba(255,255,255,0.95)",
+              slotProps={{
+                paper: {
+                  sx: {
+                    width: 260,
+                    backdropFilter: "blur(20px)",
+                    backgroundColor:
+                      mode === "dark"
+                        ? "rgba(20, 24, 31, 0.95)"
+                        : "rgba(255,255,255,0.95)",
+                  },
                 },
               }}
             >
@@ -184,7 +197,15 @@ export default function Navbar({ toggleTheme, mode }) {
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Box component="img" src="/assets/pasteboard_logo.png" sx={{ width: 24 }} />
-                    <Typography fontWeight={600}>SyncBoard</Typography>
+                    <Typography sx={{ 
+                      fontWeight: 700,
+                      background: (theme) =>
+                        theme.palette.mode === "dark"
+                          ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
+                          : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}>SyncBoard</Typography>
                   </Box>
                   <IconButton onClick={() => toggleDrawer(false)}>
                     <CloseRoundedIcon />

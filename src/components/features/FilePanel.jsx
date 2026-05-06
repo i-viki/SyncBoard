@@ -44,7 +44,7 @@ const isImageFile = (file) => {
     return ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico"].includes(ext);
 };
 
-function FileItem({ file, theme, loader, handleDownloadFile, handleDeleteFile, isBoardInteractionDisabled }) {
+function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardInteractionDisabled }) {
     const isImage = isImageFile(file);
     const FileIcon = getFileIcon(file.type || file.fileType);
 
@@ -149,7 +149,7 @@ function FilePanel({
             }}
         >
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="subtitle2" fontWeight={600}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                     Board Files
                 </Typography>
                 <Chip
@@ -195,12 +195,12 @@ function FilePanel({
                         <Typography variant="caption">Uploading...</Typography>
                     </Box>
                 ) : (
-                    <>
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                         <FileUp size={24} style={{ opacity: 0.6, marginBottom: 4 }} />
-                        <Typography variant="caption" display="block">
+                        <Typography variant="caption" display="block" sx={{ textAlign: "center" }}>
                             Drop files here or click to upload
                         </Typography>
-                    </>
+                    </Box>
                 )}
             </Box>
 

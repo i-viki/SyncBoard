@@ -10,11 +10,16 @@ function SectionHeader({ title, subtitle }) {
     <Box sx={{ mb: 6 }}>
       <Typography 
         variant="h3" 
-        fontWeight={900} 
         gutterBottom
         sx={{
           letterSpacing: "-0.04em",
-          color: "text.primary", // Solid color, no gradient
+          fontWeight: 900,
+          background: (theme) =>
+            theme.palette.mode === "dark"
+              ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
+              : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
           fontSize: { xs: "2.5rem", md: "3.5rem" }
         }}
       >
@@ -66,7 +71,7 @@ function AboutText() {
       {/* VALUE PROPS */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={4} sx={{ mb: 12 }}>
         <GlassSection sx={{ flex: 1, mb: 0 }}>
-          <Typography variant="h5" fontWeight={800} gutterBottom sx={{ color: "primary.main", letterSpacing: "-0.02em" }}>
+          <Typography variant="h5" gutterBottom sx={{ color: "primary.main", letterSpacing: "-0.02em", fontWeight: 800 }}>
             Built for Speed
           </Typography>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7, fontWeight: 500 }}>
@@ -75,7 +80,7 @@ function AboutText() {
         </GlassSection>
 
         <GlassSection sx={{ flex: 1, mb: 0 }}>
-          <Typography variant="h5" fontWeight={800} gutterBottom sx={{ color: "secondary.main", letterSpacing: "-0.02em" }}>
+          <Typography variant="h5" gutterBottom sx={{ color: "secondary.main", letterSpacing: "-0.02em", fontWeight: 800 }}>
             Privacy First
           </Typography>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7, fontWeight: 500 }}>
@@ -86,7 +91,7 @@ function AboutText() {
 
       {/* WORKFLOW */}
       <Box sx={{ mb: 15 }}>
-        <Typography variant="h4" fontWeight={900} sx={{ mb: 8, textAlign: "center", letterSpacing: "-0.03em" }}>
+        <Typography variant="h4" sx={{ mb: 8, textAlign: "center", letterSpacing: "-0.03em", fontWeight: 900 }}>
           The Workflow
         </Typography>
         <Stack direction={{ xs: "column", md: "row" }} spacing={3} justifyContent="center">
@@ -96,10 +101,10 @@ function AboutText() {
             { step: "03", title: "Sync", desc: "Text and images sync live across devices." }
           ].map((item) => (
             <Box key={item.step} sx={{ textAlign: "center", px: 2, flex: 1 }}>
-              <Typography variant="h2" fontWeight={900} sx={{ opacity: 0.08, lineHeight: 1, mb: -2, color: "text.primary" }}>
+              <Typography variant="h2" sx={{ opacity: 0.08, lineHeight: 1, mb: -2, color: "text.primary", fontWeight: 900 }}>
                 {item.step}
               </Typography>
-              <Typography variant="h6" fontWeight={800} gutterBottom sx={{ letterSpacing: "-0.01em" }}>{item.title}</Typography>
+              <Typography variant="h6" gutterBottom sx={{ letterSpacing: "-0.01em", fontWeight: 800 }}>{item.title}</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>{item.desc}</Typography>
             </Box>
           ))}
@@ -109,7 +114,7 @@ function AboutText() {
       {/* TEAM SECTION */}
       <GlassSection sx={{ mb: 15, py: 8 }}>
         <Box sx={{ textAlign: "center", mb: 8 }}>
-          <Typography variant="h4" fontWeight={900} gutterBottom sx={{ letterSpacing: "-0.03em" }}>
+          <Typography variant="h4" gutterBottom sx={{ letterSpacing: "-0.03em", fontWeight: 900 }}>
             Crafted by Engineers
           </Typography>
           <Typography color="text.secondary" sx={{ maxWidth: 700, mx: "auto", fontWeight: 500 }}>
@@ -133,7 +138,7 @@ function AboutText() {
 
       {/* FAQ SECTION */}
       <Box id="faqs" sx={{ mt: 10 }}>
-        <Typography variant="h4" fontWeight={900} sx={{ mb: 2, textAlign: "center", letterSpacing: "-0.03em" }}>
+        <Typography variant="h4" sx={{ mb: 2, textAlign: "center", letterSpacing: "-0.03em", fontWeight: 900 }}>
           Common Questions
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 8, textAlign: "center", fontWeight: 500 }}>

@@ -8,8 +8,7 @@ import {
   Tooltip,
   Chip,
 } from "@mui/material";
-import TimerIcon from "@mui/icons-material/Timer";
-import TimerOffIcon from "@mui/icons-material/TimerOff";
+import { Timer as TimerIcon, TimerOff as TimerOffIcon } from "@mui/icons-material";
 import { setBoardExpiration } from "../../services/firebaseService";
 
 export default function SelfDestructTimer({ code, expirationTime }) {
@@ -94,8 +93,10 @@ export default function SelfDestructTimer({ code, expirationTime }) {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        PaperProps={{
-          sx: { borderRadius: 2, mt: 1 },
+        slotProps={{
+          paper: {
+            sx: { borderRadius: 2, mt: 1 },
+          },
         }}
       >
         <MenuItem onClick={() => handleSetTimer(null)}>Disable Timer</MenuItem>

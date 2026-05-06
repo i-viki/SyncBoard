@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import swDev from "./swDev";
 import "./index.css";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -58,9 +57,10 @@ function Main() {
               paper: "hsl(210, 14%, 10%)",
             },
             text: {
-              primary: "hsl(210, 20%, 95%)",
-              secondary: "hsl(210, 10%, 70%)",
+              primary: "hsl(210, 25%, 98%)",
+              secondary: "rgb(171, 179, 186)",
             },
+            divider: "rgba(255, 255, 255, 0.12)",
           }),
 
           ...(mode === "light" && {
@@ -69,9 +69,10 @@ function Main() {
               paper: "hsl(0, 0%, 100%)",
             },
             text: {
-              primary: "hsl(210, 30%, 15%)",
-              secondary: "hsl(210, 15%, 40%)",
+              primary: "hsl(210, 35%, 10%)",
+              secondary: "rgb(87, 102, 117)",
             },
+            divider: "rgba(0, 0, 0, 0.08)",
           }),
 
           primary: { main: "#3b82f6" },
@@ -133,10 +134,3 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(<Main />);
-
-/* ------------------ Service Worker ------------------ */
-
-// Register only in production to avoid caching issues in dev
-if (import.meta.env.PROD) {
-  swDev();
-}

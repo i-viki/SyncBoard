@@ -45,7 +45,7 @@ function TermsConditionsContent() {
         {/* Sections */}
         {sections.map((section) => (
           <Box key={section.id} mt={4}>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
               {section.id}. {section.title}
             </Typography>
 

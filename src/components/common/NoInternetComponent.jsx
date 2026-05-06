@@ -77,7 +77,7 @@ export default function NoInternetComponent() {
           <Typography fontSize={80}>📡</Typography>
 
           {/* Title */}
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
             Oops! You're Offline
           </Typography>
 

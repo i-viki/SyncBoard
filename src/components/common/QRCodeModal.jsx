@@ -10,19 +10,22 @@ import {
   IconButton,
 } from "@mui/material";
 import { QRCodeSVG } from "qrcode.react";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { CloseRounded as CloseRoundedIcon } from "@mui/icons-material";
 
 export default function QRCodeModal({ open, onClose, url, code }) {
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{
-        sx: {
-          borderRadius: 4,
-          p: 1,
-          maxWidth: 320,
-          textAlign: "center",
+      maxWidth="xs"
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 4,
+            p: 1,
+            maxWidth: 320,
+            textAlign: "center",
+          },
         },
       }}
     >

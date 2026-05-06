@@ -96,7 +96,7 @@ function ImagePanel({
                 )}
 
                 {images.length === 1 && (
-                    <Stack spacing={2} alignItems="center" sx={{ width: "50%" }}>
+                    <Stack spacing={2} sx={{ alignItems: "center", width: "50%" }}>
                         <Box sx={{ position: "relative", width: "100%" }}>
                             <img
                                 src={images[0].src}

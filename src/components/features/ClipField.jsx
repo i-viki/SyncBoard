@@ -290,7 +290,7 @@ function ClipField() {
   };
 
   // Delete file
-    const handleDeleteFile = useCallback((src) => {
+  const handleDeleteFile = useCallback((src) => {
     const updated = firebaseData.images.map((img) =>
       img.src === src ? { ...img, deleted: true } : img
     );
@@ -322,16 +322,16 @@ function ClipField() {
         credentials: "omit"
       });
       if (!response.ok) throw new Error("Network response was not ok");
-      
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      
+
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = sanitizedName;
       document.body.appendChild(link);
       link.click();
-      
+
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
@@ -446,7 +446,7 @@ function ClipField() {
             fullWidth
             type="password"
             label="Enter 6-digit PIN"
-            inputProps={{ maxLength: 6 }}
+            slotProps={{ htmlInput: { maxLength: 6 } }}
             value={pinInput}
             onChange={(e) =>
               setPinInput(e.target.value.replace(/\D/g, ""))

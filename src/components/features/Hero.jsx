@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { clickLogging, clipboardLogging } from "../../services/analyticsService";
 import FAQsIcon from "./FAQsIcon";
-import HistoryIcon from '@mui/icons-material/History';
-import CloseIcon from '@mui/icons-material/Close';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {
+  History as HistoryIcon,
+  Close as CloseIcon,
+  ArrowForward as ArrowForwardIcon
+} from "@mui/icons-material";
 import { Chip, Tooltip } from "@mui/material";
 
 import {
@@ -20,20 +22,20 @@ import {
 
 function Hero() {
   const navigate = useNavigate();
-   const [joiningCode, setJoiningCode] = useState("");
+  const [joiningCode, setJoiningCode] = useState("");
   const [codeError, setCodeError] = useState(false);
   const [history, setHistory] = useState([]);
   const JOINING_CODE_LENGTH = 5;
 
   useEffect(() => {
     try {
-        const saved = localStorage.getItem("board_history");
-        if (saved) {
-            setHistory(JSON.parse(atob(saved)));
-        }
+      const saved = localStorage.getItem("board_history");
+      if (saved) {
+        setHistory(JSON.parse(atob(saved)));
+      }
     } catch (e) {
-        console.error("Failed to parse history", e);
-        setHistory([]);
+      console.error("Failed to parse history", e);
+      setHistory([]);
     }
   }, []);
 
@@ -70,36 +72,46 @@ function Hero() {
       setCodeError(true);
     }
   };
-  
+
   return (
     <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 10 }, mb: { xs: 6, md: 10 } }}>
       {/* Header */}
-      <Box textAlign="center" mb={{ xs: 4, md: 8 }}>
+      <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
         <img
-          src="./assets/icon.png"
+          src="/assets/icon.png"
           alt="Clipboard Logo"
           style={{
-            width: 110 ,
+            width: 110,
             marginBottom: 20,
           }}
         />
 
         <Typography
           variant="h4"
-          fontWeight={700}
           gutterBottom
-          sx={{ fontSize: "4rem" }}
+          sx={{
+            fontSize: { xs: "3.5rem", md: "5.5rem" },
+            fontWeight: 700,
+            letterSpacing: "-0.04em",
+            background: (theme) =>
+              theme.palette.mode === "dark"
+                ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
+                : "linear-gradient(135deg, #1e293b 0%, #64748b 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            mb: 2,
+          }}
         >
           SyncBoard
         </Typography>
 
         <Typography
           variant="h6"
-          color="text.secondary"
           sx={{
             maxWidth: { xs: 400, sm: 500, md: 700 },
             mx: "auto",
             fontSize: { xs: "1rem", sm: "1rem", md: "1.125rem" },
+            color: "text.secondary"
           }}
         >
           Instantly join a board with a unique key. Share text and images in real time.
@@ -127,8 +139,7 @@ function Hero() {
             />
           }
           spacing={{ xs: 4, md: 6 }}
-          alignItems="center"
-          justifyContent="space-between"
+          sx={{ alignItems: "center", justifyContent: "space-between" }}
         >
           {/* LEFT — CREATE */}
           <Box
@@ -139,19 +150,18 @@ function Hero() {
           >
             <Typography
               variant="h5"
-              fontWeight={600}
               gutterBottom
-              sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
+              sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" }, fontWeight: 600 }}
             >
               Create a New Board
             </Typography>
 
             <Typography
               variant="body2"
-              color="text.secondary"
               sx={{
                 mb: 3,
                 fontSize: { xs: "0.85rem", md: "1rem" },
+                color: "text.secondary"
               }}
             >
               Generate a unique board instantly and start collaborating.
@@ -182,18 +192,20 @@ function Hero() {
           >
             <Typography
               variant="h5"
-              fontWeight={600}
               gutterBottom
               color={codeError ? "error" : "text.primary"}
-              sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
+              sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" }, fontWeight: 600 }}
             >
               {codeError ? "Invalid Board ID" : "Join Existing Board"}
             </Typography>
 
             <Typography
               variant="body2"
-              color="text.secondary"
-              sx={{ mb: 3, fontSize: { xs: "0.85rem", md: "1rem" } }}
+              sx={{ 
+                mb: 3, 
+                fontSize: { xs: "0.85rem", md: "1rem" },
+                color: "text.secondary"
+              }}
             >
               Enter the 5-character board ID to join instantly.
             </Typography>
@@ -210,7 +222,7 @@ function Hero() {
                 size="medium"
                 value={joiningCode}
                 error={codeError}
-                inputProps={{ maxLength: 5 }}
+                slotProps={{ htmlInput: { maxLength: 5 } }}
                 onChange={(e) => {
                   setJoiningCode(e.target.value);
                   setCodeError(false);
@@ -223,7 +235,7 @@ function Hero() {
 
               <Button
                 aria-label="Join Board"
-                variant="outlined"
+                variant="contained"
                 size="large"
                 onClick={validateJoiningCode}
                 sx={{
@@ -239,69 +251,73 @@ function Hero() {
       </Paper>
 
       {history.length > 0 && (
-          <Box sx={{ mt: 5, px: { xs: 1, md: 4 } }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <HistoryIcon sx={{ fontSize: 18, opacity: 0.6 }} />
-                    <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1.5, opacity: 0.6 }}>
-                        Recent Boards
-                    </Typography>
-                </Box>
-                <Button 
-                    size="small" 
-                    variant="text" 
-                    onClick={clearHistory}
-                    startIcon={<CloseIcon sx={{ fontSize: "14px !important" }} />}
-                    sx={{ 
-                        fontSize: 11, 
-                        fontWeight: 600,
-                        color: "error.main",
-                        opacity: 0.7, 
-                        "&:hover": { opacity: 1, backgroundColor: "rgba(211, 47, 47, 0.05)" } 
-                    }}
-                >
-                    Clear History
-                </Button>
-            </Box>
-
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-                {history.map((code) => (
-                    <Chip
-                        key={code}
-                        label={code}
-                        onClick={() => navigate(`/${code}`)}
-                        onDelete={(e) => {
-                            e.stopPropagation();
-                            const newHistory = history.filter(c => c !== code);
-                            localStorage.setItem("board_history", btoa(JSON.stringify(newHistory)));
-                            setHistory(newHistory);
-                        }}
-                        deleteIcon={<CloseIcon sx={{ fontSize: "14px !important" }} />}
-                        variant="outlined"
-                        icon={<ArrowForwardIcon sx={{ fontSize: "14px !important" }} />}
-                        sx={{ 
-                            px: 1, 
-                            py: 2.5, 
-                            borderRadius: 2, 
-                            fontWeight: 700,
-                            letterSpacing: 1,
-                            backgroundColor: (theme) => theme.palette.mode === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
-                            transition: "0.2s",
-                            "&:hover": {
-                                backgroundColor: "primary.main",
-                                color: "white",
-                                borderColor: "primary.main",
-                                transform: "translateY(-2px)",
-                                "& .MuiChip-icon, & .MuiChip-deleteIcon": {
-                                    color: "white"
-                                }
-                            }
-                        }}
-                    />
-                ))}
-            </Box>
+        <Box sx={{ mt: 5, px: { xs: 1, md: 4 } }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <HistoryIcon sx={{ fontSize: 18, opacity: 0.6 }} />
+                <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1.5, color: "text.secondary" }}>
+                  Recent Boards
+                </Typography>
+              </Box>
+            <Button
+              size="small"
+              variant="text"
+              onClick={clearHistory}
+              startIcon={<CloseIcon sx={{ fontSize: "14px !important" }} />}
+              sx={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: "error.main",
+                opacity: 0.7,
+                "&:hover": { opacity: 1, backgroundColor: "rgba(211, 47, 47, 0.05)" }
+              }}
+            >
+              Clear History
+            </Button>
           </Box>
-        )}
+
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+            {history.map((code) => (
+              <Chip
+                key={code}
+                label={code}
+                onClick={() => navigate(`/${code}`)}
+                onDelete={(e) => {
+                  e.stopPropagation();
+                  const newHistory = history.filter(c => c !== code);
+                  localStorage.setItem("board_history", btoa(JSON.stringify(newHistory)));
+                  setHistory(newHistory);
+                }}
+                deleteIcon={<CloseIcon sx={{ fontSize: "14px !important" }} />}
+                variant="outlined"
+                icon={<ArrowForwardIcon sx={{ fontSize: "14px !important" }} />}
+                sx={{
+                  px: 1,
+                  py: 2.5,
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  letterSpacing: 1,
+                  backgroundColor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.02)"
+                      : "rgba(0,0,0,0.02)",
+                  transition: "0.2s",
+                  "&:hover": {
+                    backgroundColor: "primary.main",
+                    color: "white",
+                    borderColor: "primary.main",
+                    transform: "translateY(-2px)",
+                    boxShadow: (theme) => theme.shadows[4],
+                    "& .MuiChip-icon, & .MuiChip-deleteIcon": {
+                      color: "white"
+                    }
+                  }
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+      )}
 
       <FAQsIcon />
     </Container>

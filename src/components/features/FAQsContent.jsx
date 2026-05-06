@@ -6,7 +6,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 
 function FAQsContent({ question, answer }) {
   return (
@@ -43,7 +43,7 @@ function FAQsContent({ question, answer }) {
           },
         }}
       >
-        <Typography fontWeight={600}>
+        <Typography sx={{ fontWeight: 600 }}>
           {question}
         </Typography>
       </AccordionSummary>

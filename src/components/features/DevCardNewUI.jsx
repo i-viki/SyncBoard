@@ -43,9 +43,9 @@ function DevCardNewUI() {
       />
 
       {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
         <Box>
-          <Typography variant="h6" fontWeight={600}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Jayavignesh
           </Typography>
           <Chip
@@ -102,7 +102,7 @@ function DevCardNewUI() {
       </Box>
 
       {/* About */}
-      <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
         About
       </Typography>
 

@@ -18,13 +18,13 @@ function PrivacyPolicy() {
             <Typography
               variant="h3"
               component="h1"
-              fontWeight={900}
               gutterBottom
               sx={{
                 letterSpacing: "-0.04em",
                 background: "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
+                fontWeight: 900,
               }}
             >
               Privacy Policy
@@ -39,8 +39,8 @@ function PrivacyPolicy() {
             sx={{
               p: { xs: 3, md: 6 },
               borderRadius: 4,
-              border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              backgroundColor: (theme) => alpha(theme.palette.background.paper, 0.4),
+              border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.2)}`,
+              backgroundColor: (theme) => alpha(theme.palette.background.paper, 0.6),
               backdropFilter: "blur(10px)",
               typography: "body1",
               lineHeight: 1.8,
@@ -52,9 +52,10 @@ function PrivacyPolicy() {
                 color: "text.primary"
               },
               "& p": {
-                color: "text.secondary",
+                color: "text.primary",
                 mb: 2,
-                fontSize: "1rem"
+                fontSize: "1rem",
+                opacity: 0.9
               }
             }}
           >

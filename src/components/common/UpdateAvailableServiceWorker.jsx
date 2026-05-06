@@ -1,47 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useRegisterSW } from "virtual:pwa-register/react";
+import { Button, Paper, Typography, Stack, Box } from "@mui/material";
+import { SystemUpdate as SystemUpdateIcon } from "@mui/icons-material";
 
 function UpdateAvailableServiceWorker() {
-  const [newVersionAvailable, setNewVersionAvailable] = useState(false);
+  const registerSW = useRegisterSW({
+    onRegistered(r) {
+      console.log("SW Registered");
+    },
+    onRegisterError(error) {
+      console.error("SW registration error", error);
+    },
+  });
 
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+  // Extremely defensive handling for the PWA hook
+  const offlineReadyState = (registerSW && registerSW.offlineReady) ? registerSW.offlineReady : [false, () => {}];
+  const needUpdateState = (registerSW && registerSW.needUpdate) ? registerSW.needUpdate : [false, () => {}];
+  
+  const [offlineReady, setOfflineReady] = offlineReadyState;
+  const [needUpdate, setNeedUpdate] = needUpdateState;
+  const updateServiceWorker = registerSW ? registerSW.updateServiceWorker : () => {};
 
-    const handler = (event) => {
-      if (event.data?.type === "NEW_VERSION_AVAILABLE") {
-        setNewVersionAvailable(true);
-      }
-    };
-
-    navigator.serviceWorker.addEventListener("message", handler);
-
-    return () => {
-      navigator.serviceWorker.removeEventListener("message", handler);
-    };
-  }, []);
-
-  const reloadPage = () => {
-    window.location.reload();
+  const close = () => {
+    if (typeof setOfflineReady === 'function') setOfflineReady(false);
+    if (typeof setNeedUpdate === 'function') setNeedUpdate(false);
   };
 
-  if (!newVersionAvailable) return null;
+  if (!offlineReady && !needUpdate) return null;
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         position: "fixed",
-        bottom: 0,
-        width: "100%",
-        background: "#1976d2",
-        color: "white",
-        padding: "12px",
-        textAlign: "center",
-        cursor: "pointer",
+        bottom: 24,
+        right: 24,
         zIndex: 9999,
+        maxWidth: 350,
+        width: "calc(100% - 48px)",
       }}
-      onClick={reloadPage}
     >
-      ✨ Update available! Click to refresh.
-    </div>
+      <Paper
+        elevation={6}
+        sx={{
+          p: 2.5,
+          backgroundColor: "primary.main",
+          color: "white",
+          borderRadius: 3,
+        }}
+      >
+        <Stack spacing={2}>
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+            <SystemUpdateIcon />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {offlineReady ? "App ready to work offline" : "New update available!"}
+            </Typography>
+          </Stack>
+          
+          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+            {offlineReady 
+              ? "SyncBoard is now cached and available offline." 
+              : "A new version of SyncBoard is ready. Update now to get the latest features."}
+          </Typography>
+
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <Button 
+              onClick={close} 
+              sx={{ color: "white", opacity: 0.8, textTransform: "none" }}
+            >
+              Close
+            </Button>
+            {needUpdate && (
+              <Button
+                variant="contained"
+                onClick={() => updateServiceWorker(true)}
+                sx={{ 
+                  backgroundColor: "white", 
+                  color: "primary.main",
+                  fontWeight: 700,
+                  textTransform: "none",
+                  "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" }
+                }}
+              >
+                Update Now
+              </Button>
+            )}
+          </Stack>
+        </Stack>
+      </Paper>
+    </Box>
   );
 }
 

@@ -10,8 +10,7 @@ import {
   Stack,
   Chip,
 } from "@mui/material";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import LaunchIcon from "@mui/icons-material/Launch";
+import { LinkedIn as LinkedInIcon, Launch as LaunchIcon } from "@mui/icons-material";
 export default function DevCard({
   name,
   link,
@@ -56,7 +55,7 @@ export default function DevCard({
               spacing={1}
               sx={{ mb: 0.5 }}
             >
-              <Typography variant="h6" fontWeight={600}>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {name}
               </Typography>
 

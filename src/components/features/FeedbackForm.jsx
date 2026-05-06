@@ -150,7 +150,7 @@ export default function FeedbackForm() {
           color: "white",
         }}
       >
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>
           We value your feedback
         </Typography>
 
@@ -186,7 +186,7 @@ export default function FeedbackForm() {
           <Box>
             {!isSubmitted && (
               <>
-                <Typography variant="h5" fontWeight={600} gutterBottom>
+                <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
                   Share Your Experience
                 </Typography>
 
@@ -305,8 +305,8 @@ export default function FeedbackForm() {
         {/* SUCCESS STATE */}
         {isSubmitted && (
           <Fade in={isSubmitted}>
-            <Box textAlign="center">
-              <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Box sx={{ textAlign: "center" }}>
+              <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
                 🎉 Thank You!
               </Typography>
               <Typography color="text.secondary" sx={{ mb: 3 }}>

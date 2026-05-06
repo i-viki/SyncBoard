@@ -42,11 +42,11 @@ export default function Feedback() {
             <Typography 
               component="h1" 
               variant="h2" 
-              fontWeight={900} 
               gutterBottom
               sx={{
                 letterSpacing: "-0.05em",
                 color: "text.primary", // Solid color
+                fontWeight: 900,
               }}
             >
               Building With You
