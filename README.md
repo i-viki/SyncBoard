@@ -153,11 +153,15 @@ npm run build
 
 ---
 
-## Maintainer
+## Maintainers & Contributors
 
 **Jayavignesh**  
 Superuser & Lead Developer  
 [Portfolio](https://jayavignesh.dev) | [LinkedIn](https://www.linkedin.com/in/jayavigneshj/)
+
+**Karthick**  
+Core Contributor  
+[GitHub Profile](https://github.com/Karthick-1501)
 
 ---
 
