@@ -10,17 +10,17 @@
 
 Developed with ☕
 
-![Vite](https://img.shields.io/badge/Built_with-Vite-B73BFE?style=flat&logo=vite&logoColor=white)
-![React](https://img.shields.io/badge/Library-React-20232A?style=flat&logo=react&logoColor=61DAFB)
-![MUI](https://img.shields.io/badge/UI-Material%20UI-007FFF?style=flat&logo=mui&logoColor=white)
-![Firebase](https://img.shields.io/badge/Backend-Firebase-ffca28?style=flat&logo=firebase&logoColor=black)
+![Vite](https://img.shields.io/badge/Built_with-Vite%207.3.1-B73BFE?style=flat&logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/Library-React%2019.2.5-20232A?style=flat&logo=react&logoColor=61DAFB)
+![MUI](https://img.shields.io/badge/UI-Material%20UI%209.0.0-007FFF?style=flat&logo=mui&logoColor=white)
+![Firebase](https://img.shields.io/badge/Backend-Firebase%2012.9.0-ffca28?style=flat&logo=firebase&logoColor=black)
 ![Cloudinary](https://img.shields.io/badge/Storage-Cloudinary-3448C5?style=flat&logo=cloudinary&logoColor=white)
 ![Hosting](https://img.shields.io/badge/Hosting-Vercel-000000?style=flat&logo=vercel&logoColor=white)
 ![Language](https://img.shields.io/badge/Language-JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 ![PWA](https://img.shields.io/badge/App-PWA-5A0FC8?style=flat&logo=pwa&logoColor=white)
 ![Auth](https://img.shields.io/badge/Auth-Anonymous-9cf?style=flat&logo=firebase&logoColor=white)
-![Version](https://img.shields.io/badge/Version-1.2.1-orange?style=flat)
+![Version](https://img.shields.io/badge/Version-1.3.0-orange?style=flat)
 
 ---
 
