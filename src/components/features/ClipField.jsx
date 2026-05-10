@@ -5,11 +5,11 @@ import {
   listenToRoom,
   updateRoom,
   updateRoomText,
-  addUserToRoom,
 } from "../../services/firebaseService";
 import { uploadToCloudinary } from "../../services/cloudinaryService";
 import { userIdentifier } from "../../utils/userIdentifier";
 import { sanitizeString, sanitizeFileName } from "../../utils/sanitize";
+import { ensureAnonymousAuth } from "../../services/authService";
 import TextEditor from "./TextEditor";
 import FilePanel from "./FilePanel";
 import { useTheme, Box, Button } from "@mui/material";
@@ -142,57 +142,66 @@ function ClipField() {
 
   /* ================= FIREBASE LISTENER ================= */
 
-  // Listen to room changes
+  // Listen to room changes — wait for auth first so DB rules don't reject the read
   useEffect(() => {
-    const unsubscribe = listenToRoom(code, (data) => {
-      if (!data) return;
+    let unsubscribe = null;
+    let cancelled = false;
 
-      // Check for expiration
-      if (data.expirationTime && Date.now() > data.expirationTime) {
-        updateRoom(code, {
-          text: "",
-          images: [],
-          expirationTime: null,
-          passwordHash: null,
-          lastUpdated: new Date().toISOString(),
+    ensureAnonymousAuth()
+      .then(() => {
+        if (cancelled) return;
+        unsubscribe = listenToRoom(code, (data) => {
+          if (!data) return;
+
+          // Check for expiration
+          if (data.expirationTime && Date.now() > data.expirationTime) {
+            updateRoom(code, {
+              text: "",
+              images: [],
+              expirationTime: null,
+              passwordHash: null,
+              lastUpdated: new Date().toISOString(),
+            });
+            toast.error("Board session expired and has been cleared");
+            return;
+          }
+
+          const text = data?.text ?? "";
+
+          if (
+            textInputFieldRef.current &&
+            textInputFieldRef.current.value !== text
+          ) {
+            textInputFieldRef.current.value = text;
+          }
+
+          if (textValue !== text) {
+            setTextValue(text);
+          }
+
+          calculateMetrics(text);
+          updateLineNumbers(text);
+
+          setFirebaseData(data);
+          setIsLocked(!!data?.passwordHash);
+          setIsLockDisabled(!!data?.isLockDisabled);
+
+          if (data?.images?.length) {
+            const active = data.images.filter((img) => !img.deleted);
+            setImages(active);
+          }
         });
-        toast.error("Board session expired and has been cleared");
-        return;
-      }
+      })
+      .catch(() => {
+        // Auth failed — listener won't start, but the app still renders
+      });
 
-      const text = data?.text ?? "";
-
-      if (
-        textInputFieldRef.current &&
-        textInputFieldRef.current.value !== text
-      ) {
-        textInputFieldRef.current.value = text;
-      }
-
-      if (textValue !== text) {
-        setTextValue(text);
-      }
-
-      calculateMetrics(text);
-      updateLineNumbers(text);
-
-      setFirebaseData(data);
-      setIsLocked(!!data?.passwordHash);
-      setIsLockDisabled(!!data?.isLockDisabled);
-
-      if (data?.images?.length) {
-        const active = data.images.filter((img) => !img.deleted);
-        setImages(active);
-      }
-    });
-
-    return () => unsubscribe();
+    return () => {
+      cancelled = true;
+      if (unsubscribe) unsubscribe();
+    };
   }, [code]);
 
-  // Add user to room
-  useEffect(() => {
-    addUserToRoom(code, USER_UUID);
-  }, [code]);
 
   /* ================= IMAGE HANDLING ================= */
 

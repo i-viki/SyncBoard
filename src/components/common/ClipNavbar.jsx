@@ -31,6 +31,7 @@ import QRCodeModal from "./QRCodeModal";
 import SelfDestructTimer from "../features/SelfDestructTimer";
 import { trackPresence, listenToPresence, getRoomRef } from "../../services/firebaseService";
 import { userIdentifier, sessionIdentifier } from "../../utils/userIdentifier";
+import { ensureAnonymousAuth } from "../../services/authService";
 
 const GlassToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -78,34 +79,48 @@ export default function ClipNavbar({ internetStatus,
     }
   }, [code, navigate]);
 
-  // Connection status & Presence
+  // Connection status & Presence — wait for auth first
   useEffect(() => {
-    onDisconnect(roomRef);
-    const connectionStatusRef = ref(appDatabase, ".info/connected");
-    onValue(connectionStatusRef, (snapshot) => {
-      const isConnected = snapshot.val();
-      setStatus(isConnected ? "Connected" : "Connecting...");
-    });
+    let cancelled = false;
+    let unsubTrack = null;
+    let unsubPresence = null;
+    let unsubRoom = null;
 
-    // Track this session's presence
-    const unsubTrack = trackPresence(code, SESSION_ID);
+    ensureAnonymousAuth()
+      .then(() => {
+        if (cancelled) return;
 
-    // Listen to total active users
-    const unsubPresence = listenToPresence(code, (count) => {
-      setActiveUsers(count);
-    });
+        onDisconnect(roomRef);
+        const connectionStatusRef = ref(appDatabase, ".info/connected");
+        onValue(connectionStatusRef, (snapshot) => {
+          const isConnected = snapshot.val();
+          setStatus(isConnected ? "Connected" : "Connecting...");
+        });
 
-    // Listen to room data for expiration
-    const unsubRoom = onValue(roomRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setRoomData(snapshot.val());
-      }
-    });
+        // Track this session's presence
+        unsubTrack = trackPresence(code, SESSION_ID);
+
+        // Listen to total active users
+        unsubPresence = listenToPresence(code, (count) => {
+          setActiveUsers(count);
+        });
+
+        // Listen to room data for expiration
+        unsubRoom = onValue(roomRef, (snapshot) => {
+          if (snapshot.exists()) {
+            setRoomData(snapshot.val());
+          }
+        });
+      })
+      .catch(() => {
+        // Auth failed — listeners won't start
+      });
 
     return () => {
-      unsubPresence();
-      unsubRoom();
-      unsubTrack();
+      cancelled = true;
+      if (unsubPresence) unsubPresence();
+      if (unsubRoom) unsubRoom();
+      if (unsubTrack) unsubTrack();
     };
   }, [roomRef, code, SESSION_ID]);
 

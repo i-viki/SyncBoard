@@ -19,7 +19,8 @@ Developed with ☕
 ![Language](https://img.shields.io/badge/Language-JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 ![PWA](https://img.shields.io/badge/App-PWA-5A0FC8?style=flat&logo=pwa&logoColor=white)
-![Version](https://img.shields.io/badge/Version-1.2.0-orange?style=flat)
+![Auth](https://img.shields.io/badge/Auth-Anonymous-9cf?style=flat&logo=firebase&logoColor=white)
+![Version](https://img.shields.io/badge/Version-1.2.1-orange?style=flat)
 
 ---
 
@@ -52,6 +53,7 @@ A professional-grade editing experience for code and notes.
 - **Metrics**: Integrated word, character, and line counts.
 
 ### Board Security & Privacy
+- **Anonymous Authentication**: Every visitor is silently authenticated via Firebase Anonymous Auth, enabling secure database rules without requiring sign-up or login.
 - **Locking Mechanism**: Secure any board with a **6-digit PIN** using SHA-256 hashing.
 - **Interaction Control**: Once locked, board editing is disabled for anyone without the correct PIN.
 - **QR Code Sharing**: Generate a scannable code to instantly open boards on mobile devices.
@@ -78,7 +80,7 @@ src/
 ├── components/
 │   ├── common/      # Reusable UI (Navbar, Footer, Modals)
 │   └── features/    # Core logic components (TextEditor, FilePanel)
-├── services/        # Logic for Firebase, Cloudinary, and Analytics
+├── services/        # Logic for Firebase, Cloudinary, Analytics, and Auth
 ├── utils/           # Helper functions (Sanitization, User ID, PIN Hashing)
 ├── constants/       # Static content, FAQs, and Developer data
 ├── config/          # Centralized configuration (Firebase init)
@@ -90,9 +92,10 @@ src/
 
 ## Technology Stack
 
-- **Frontend**: React 18 with Vite for lightning-fast builds.
+- **Frontend**: React 19 with Vite for lightning-fast builds.
 - **Styling**: Material UI (MUI) with a custom handcrafted "Elite" theme engine.
 - **Database**: Firebase Realtime Database with debounced syncing.
+- **Auth**: Firebase Anonymous Authentication for secure, frictionless access.
 - **Storage**: Cloudinary for optimized file management and delivery.
 - **Communication**: EmailJS for reliable feedback and contact management.
 - **Analytics**: Firebase Analytics for anonymous usage insights.
@@ -111,7 +114,11 @@ git clone https://github.com/i-viki/SyncBoard.git
 npm install
 ```
 
-### 3. Environment Configuration
+### 3. Firebase Console Setup
+- Enable **Anonymous Authentication** in Firebase Console → **Authentication → Sign-in method → Anonymous → Enable**.
+- Configure **Realtime Database** security rules to require `auth != null`.
+
+### 4. Environment Configuration
 Create a `.env` file in the root directory based on `example.env`:
 ```env
 # Firebase Configuration
@@ -134,12 +141,12 @@ VITE_APP_EMAILJSSERVICE_KEY=your_service_id
 VITE_APP_EMAILJSTEMPLATE_KEY=your_template_id
 ```
 
-### 4. Run Development Server
+### 5. Run Development Server
 ```bash
 npm run dev
 ```
 
-### 5. Build for Production
+### 6. Build for Production
 ```bash
 npm run build
 ```

@@ -75,14 +75,6 @@ export const updateRoomText = async (
 };
 
 /* ========================= */
-/* ===== ADD USER ========== */
-/* ========================= */
-
-export const addUserToRoom = async (code, USER_UUID) => {
-  // Removed legacy users array tracking to favor real-time presence
-};
-
-/* ========================= */
 /* ===== PRESENCE ========== */
 /* ========================= */
 
