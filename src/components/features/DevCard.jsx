@@ -17,6 +17,8 @@ export default function DevCard({
   login,
   portfolio,
   badge,
+  avatar,
+  description,
 }) {
   return (
     <Card
@@ -38,7 +40,7 @@ export default function DevCard({
       <CardContent>
         <Stack direction="row" spacing={2} alignItems="center">
           <Avatar
-            src={`/assets/avatar-${login}.webp`}
+            src={avatar || `/assets/avatar-${login}.webp`}
             alt={name}
             sx={{
               width: 70,
@@ -75,6 +77,11 @@ export default function DevCard({
             <Typography variant="body2" color="text.secondary">
               @{login}
             </Typography>
+            {description && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, lineHeight: 1.3 }}>
+                {description}
+              </Typography>
+            )}
           </Box>
         </Stack>
       </CardContent>
