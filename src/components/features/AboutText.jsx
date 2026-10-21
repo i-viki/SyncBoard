@@ -3,33 +3,67 @@ import DevCard from "./DevCard";
 import FAQsContent from "./FAQsContent";
 import { developers } from "../../constants/developers";
 import { frequentlyAskedQuestionsList } from "../../constants/faqs";
-import { Container, Box, Typography, Divider, alpha, Stack } from "@mui/material";
+import { Container, Box, Typography, Grid, useTheme } from "@mui/material";
+import { Bolt as BoltIcon, ShieldOutlined as ShieldIcon } from "@mui/icons-material";
 
-function SectionHeader({ title, subtitle }) {
+function SectionHeader({ title, subtitle, eyebrow, isDark }) {
   return (
-    <Box sx={{ mb: 6 }}>
-      <Typography 
-        variant="h3" 
-        gutterBottom
+    <Box sx={{ mb: { xs: 6, md: 8 }, textAlign: "center" }}>
+      {eyebrow && (
+        <Box
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            px: 2,
+            py: 0.5,
+            borderRadius: "100px",
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)",
+            border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+            mb: 2.5,
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: "12px",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#0099ff",
+            }}
+          >
+            {eyebrow}
+          </Typography>
+        </Box>
+      )}
+
+      <Typography
+        variant="h1"
         sx={{
-          letterSpacing: "-0.04em",
-          fontWeight: 900,
-          background: (theme) =>
-            theme.palette.mode === "dark"
-              ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
-              : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          fontSize: { xs: "2.5rem", md: "3.5rem" }
+          fontFamily: "var(--font-display)",
+          fontSize: { xs: "2.5rem", sm: "3.75rem", md: "4.75rem" },
+          fontWeight: 500,
+          lineHeight: { xs: 1.05, md: 0.98 },
+          letterSpacing: { xs: "-1.5px", md: "-3.5px" },
+          color: isDark ? "#ffffff" : "#090909",
+          mb: 2.5,
+          maxWidth: "920px",
+          mx: "auto",
         }}
       >
         {title}
       </Typography>
+
       {subtitle && (
         <Typography
-          variant="h6"
-          color="text.secondary"
-          sx={{ maxWidth: 820, lineHeight: 1.6, fontWeight: 500 }}
+          sx={{
+            maxWidth: 700,
+            mx: "auto",
+            fontSize: { xs: "15px", sm: "17px", md: "18px" },
+            lineHeight: 1.5,
+            letterSpacing: "-0.18px",
+            color: isDark ? "#999999" : "#71717a",
+            fontWeight: 400,
+          }}
         >
           {subtitle}
         </Typography>
@@ -38,94 +72,297 @@ function SectionHeader({ title, subtitle }) {
   );
 }
 
-function GlassSection({ children, sx = {} }) {
-  return (
-    <Box
-      sx={{
-        p: { xs: 3, md: 5 },
-        borderRadius: 4,
-        border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.15)}`,
-        backgroundColor: (theme) => alpha(theme.palette.background.paper, 0.5),
-        backdropFilter: "blur(12px)",
-        position: "relative",
-        overflow: "hidden",
-        mb: 8,
-        ...sx
-      }}
-    >
-      {children}
-    </Box>
-  );
-}
-
 function AboutText() {
-  return (
-    <Container maxWidth="lg" sx={{ mt: 16, mb: 16 }}>
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
+  return (
+    <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 10 }, mb: { xs: 8, md: 16 } }}>
       {/* HERO SECTION */}
-      <SectionHeader 
-        title="Real-Time Collaboration Without the Overhead" 
-        subtitle="SyncBoard is a streamlined collaboration platform built for instant sharing. Create a board, share the link, and collaborate in real time. No accounts. No setup. No complexity."
+      <SectionHeader
+        isDark={isDark}
+        eyebrow="Architected for Velocity"
+        title="Real-time collaboration without the overhead."
+        subtitle="SyncBoard strips away sign-ups, subscriptions, and setup friction. Create a board, share the 5-character key, and work together in live sync."
       />
 
       {/* VALUE PROPS */}
-      <Stack direction={{ xs: "column", md: "row" }} spacing={4} sx={{ mb: 12 }}>
-        <GlassSection sx={{ flex: 1, mb: 0 }}>
-          <Typography variant="h5" gutterBottom sx={{ color: "primary.main", letterSpacing: "-0.02em", fontWeight: 800 }}>
-            Built for Speed
-          </Typography>
-          <Typography color="text.secondary" sx={{ lineHeight: 1.7, fontWeight: 500 }}>
-            Modern teams move fast. SyncBoard removes the friction between idea and execution. Everything updates instantly, keeping everyone aligned without distractions.
-          </Typography>
-        </GlassSection>
+      <Grid container spacing={3} sx={{ mb: { xs: 10, md: 14 } }}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          {/* Spotlight Card (Violet) */}
+          <Box
+            sx={{
+              height: "100%",
+              p: { xs: 4, md: 5 },
+              borderRadius: "30px", // Framer rounded.xxl
+              background: "linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)",
+              color: "#ffffff",
+              boxShadow: "0 24px 60px -15px rgba(106, 76, 245, 0.4)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              "&:hover": { transform: "translateY(-4px)" },
+            }}
+          >
+            <Box>
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: 3,
+                }}
+              >
+                <BoltIcon sx={{ color: "#ffffff", fontSize: 24 }} />
+              </Box>
 
-        <GlassSection sx={{ flex: 1, mb: 0 }}>
-          <Typography variant="h5" gutterBottom sx={{ color: "secondary.main", letterSpacing: "-0.02em", fontWeight: 800 }}>
-            Privacy First
-          </Typography>
-          <Typography color="text.secondary" sx={{ lineHeight: 1.7, fontWeight: 500 }}>
-            Anonymous by design. No tracking, no profiles, no storage of sensitive data. Your collaboration stays in your temporary board, secured by your custom PIN.
-          </Typography>
-        </GlassSection>
-      </Stack>
+              <Typography
+                sx={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: { xs: "22px", md: "26px" },
+                  fontWeight: 600,
+                  letterSpacing: "-0.8px",
+                  lineHeight: 1.15,
+                  mb: 1.5,
+                }}
+              >
+                Built for High Speed
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                  color: "rgba(255, 255, 255, 0.9)",
+                  letterSpacing: "-0.15px",
+                }}
+              >
+                Zero-friction exchange. Whether copying code snippets during live calls or passing
+                screenshots between phones and computers, changes reflect immediately without latency.
+              </Typography>
+            </Box>
+
+            <Typography
+              sx={{
+                mt: 4,
+                fontSize: "12px",
+                fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "rgba(255, 255, 255, 0.7)",
+              }}
+            >
+              Realtime WebSocket Broadcast
+            </Typography>
+          </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          {/* Surface Card */}
+          <Box
+            sx={{
+              height: "100%",
+              p: { xs: 4, md: 5 },
+              borderRadius: "24px",
+              backgroundColor: isDark ? "#141414" : "#ffffff",
+              border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              boxShadow: isDark
+                ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                : "0 10px 30px rgba(0, 0, 0, 0.05)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              "&:hover": {
+                borderColor: isDark ? "#383838" : "#d4d4d8",
+                transform: "translateY(-4px)",
+              },
+            }}
+          >
+            <Box>
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 153, 255, 0.08)",
+                  border: `1px solid ${isDark ? "#262626" : "rgba(0, 153, 255, 0.2)"}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: 3,
+                }}
+              >
+                <ShieldIcon sx={{ color: "#0099ff", fontSize: 24 }} />
+              </Box>
+
+              <Typography
+                sx={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: { xs: "22px", md: "26px" },
+                  fontWeight: 600,
+                  letterSpacing: "-0.8px",
+                  lineHeight: 1.15,
+                  color: isDark ? "#ffffff" : "#090909",
+                  mb: 1.5,
+                }}
+              >
+                Anonymous & Ephemeral
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                  color: isDark ? "#999999" : "#71717a",
+                  letterSpacing: "-0.15px",
+                }}
+              >
+                No tracking cookies. No user accounts. No harvesting. Secure your boards with
+                custom 6-digit SHA-256 PINs, or enable auto-expiration countdowns so data evaporates safely.
+              </Typography>
+            </Box>
+
+            <Typography
+              sx={{
+                mt: 4,
+                fontSize: "12px",
+                fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "#0099ff",
+              }}
+            >
+              Zero Database Retention
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
 
       {/* WORKFLOW */}
-      <Box sx={{ mb: 15 }}>
-        <Typography variant="h4" sx={{ mb: 8, textAlign: "center", letterSpacing: "-0.03em", fontWeight: 900 }}>
-          The Workflow
-        </Typography>
-        <Stack direction={{ xs: "column", md: "row" }} spacing={3} justifyContent="center">
+      <Box sx={{ mb: { xs: 10, md: 15 } }}>
+        <Box sx={{ textAlign: "center", mb: 6 }}>
+          <Typography
+            sx={{
+              fontFamily: "var(--font-display)",
+              fontSize: { xs: "28px", md: "38px" },
+              fontWeight: 500,
+              letterSpacing: "-1.5px",
+              color: isDark ? "#ffffff" : "#090909",
+              mb: 1,
+            }}
+          >
+            The Three-Step Flow
+          </Typography>
+          <Typography sx={{ color: isDark ? "#999999" : "#71717a", fontSize: "15px", letterSpacing: "-0.15px" }}>
+            How quick it really is to connect your devices.
+          </Typography>
+        </Box>
+
+        <Grid container spacing={3}>
           {[
-            { step: "01", title: "Initialize", desc: "Generate a unique board ID in seconds." },
-            { step: "02", title: "Share", desc: "Invite anyone instantly. No sign-ups." },
-            { step: "03", title: "Sync", desc: "Text and images sync live across devices." }
+            {
+              step: "01",
+              title: "Generate Key",
+              desc: "Instant 5-letter board code created right in your browser. No forms or emails required.",
+            },
+            {
+              step: "02",
+              title: "Share Access",
+              desc: "Pass the link or scan the QR code from any tablet, mobile device, or teammate workstation.",
+            },
+            {
+              step: "03",
+              title: "Stream Live",
+              desc: "Edit code with syntax highlighting, drop media assets, and watch changes stream in real time.",
+            },
           ].map((item) => (
-            <Box key={item.step} sx={{ textAlign: "center", px: 2, flex: 1 }}>
-              <Typography variant="h2" sx={{ opacity: 0.08, lineHeight: 1, mb: -2, color: "text.primary", fontWeight: 900 }}>
-                {item.step}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ letterSpacing: "-0.01em", fontWeight: 800 }}>{item.title}</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>{item.desc}</Typography>
-            </Box>
+            <Grid key={item.step} size={{ xs: 12, md: 4 }}>
+              <Box
+                sx={{
+                  p: { xs: 3.5, md: 4 },
+                  borderRadius: "24px",
+                  backgroundColor: isDark ? "#141414" : "#ffffff",
+                  border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                  boxShadow: isDark
+                    ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                    : "0 10px 30px rgba(0, 0, 0, 0.05)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "36px",
+                    fontWeight: 700,
+                    color: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.12)",
+                    letterSpacing: "-1px",
+                    mb: 1.5,
+                  }}
+                >
+                  {item.step}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "19px",
+                    fontWeight: 600,
+                    letterSpacing: "-0.5px",
+                    color: isDark ? "#ffffff" : "#090909",
+                    mb: 1,
+                  }}
+                >
+                  {item.title}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    lineHeight: 1.55,
+                    color: isDark ? "#999999" : "#71717a",
+                    letterSpacing: "-0.14px",
+                  }}
+                >
+                  {item.desc}
+                </Typography>
+              </Box>
+            </Grid>
           ))}
-        </Stack>
+        </Grid>
       </Box>
 
       {/* TEAM SECTION */}
-      <GlassSection sx={{ mb: 15, py: 8 }}>
-        <Box sx={{ textAlign: "center", mb: 8 }}>
-          <Typography variant="h4" gutterBottom sx={{ letterSpacing: "-0.03em", fontWeight: 900 }}>
+      <Box sx={{ mb: { xs: 10, md: 16 } }}>
+        <Box sx={{ textAlign: "center", mb: 6 }}>
+          <Typography
+            sx={{
+              fontFamily: "var(--font-display)",
+              fontSize: { xs: "28px", md: "38px" },
+              fontWeight: 500,
+              letterSpacing: "-1.5px",
+              color: isDark ? "#ffffff" : "#090909",
+              mb: 1,
+            }}
+          >
             Crafted by Engineers
           </Typography>
-          <Typography color="text.secondary" sx={{ maxWidth: 700, mx: "auto", fontWeight: 500 }}>
-            Built by developers who value performance, reliability, and thoughtful product design.
+          <Typography sx={{ color: isDark ? "#999999" : "#71717a", fontSize: "15px", letterSpacing: "-0.15px" }}>
+            Built by developers passionate about speed, minimalism, and polished user interfaces.
           </Typography>
         </Box>
 
         <Box
           sx={{
             display: "flex",
-            gap: 4,
+            gap: 3,
             justifyContent: "center",
             flexWrap: "wrap",
           }}
@@ -134,18 +371,29 @@ function AboutText() {
             <DevCard key={data.name} {...data} />
           ))}
         </Box>
-      </GlassSection>
+      </Box>
 
       {/* FAQ SECTION */}
-      <Box id="faqs" sx={{ mt: 10 }}>
-        <Typography variant="h4" sx={{ mb: 2, textAlign: "center", letterSpacing: "-0.03em", fontWeight: 900 }}>
-          Common Questions
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 8, textAlign: "center", fontWeight: 500 }}>
-          Everything you need to know about using SyncBoard.
-        </Typography>
+      <Box id="faqs" sx={{ maxWidth: 840, mx: "auto" }}>
+        <Box sx={{ textAlign: "center", mb: 6 }}>
+          <Typography
+            sx={{
+              fontFamily: "var(--font-display)",
+              fontSize: { xs: "28px", md: "38px" },
+              fontWeight: 500,
+              letterSpacing: "-1.5px",
+              color: isDark ? "#ffffff" : "#090909",
+              mb: 1,
+            }}
+          >
+            Frequently Asked Questions
+          </Typography>
+          <Typography sx={{ color: isDark ? "#999999" : "#71717a", fontSize: "15px", letterSpacing: "-0.15px" }}>
+            Common questions about sessions, data encryption, and device support.
+          </Typography>
+        </Box>
 
-        <Box sx={{ maxWidth: 800, mx: "auto" }}>
+        <Box>
           {frequentlyAskedQuestionsList.map((faq, index) => (
             <FAQsContent key={faq.question} {...faq} index={index} />
           ))}

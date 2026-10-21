@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet-async";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Typography,
@@ -16,22 +15,6 @@ function TermsConditionsContent() {
 
   return (
     <>
-      {/* SEO */}
-      <Helmet>
-        <title>Terms & Conditions | SyncBoard</title>
-
-        <meta
-          name="description"
-          content="Read the Terms & Conditions that govern your access to and use of SyncBoard, including user responsibilities, platform usage, and legal agreements."
-        />
-
-        <meta name="robots" content="index, follow" />
-
-        <link
-          rel="canonical"
-          href="https://isyncboard.vercel.app/terms-conditions"
-        />
-      </Helmet>
 
       <Box>
         {/* Effective Date */}

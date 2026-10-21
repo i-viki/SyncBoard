@@ -12,7 +12,7 @@ import { sanitizeString, sanitizeFileName } from "../../utils/sanitize";
 import { ensureAnonymousAuth } from "../../services/authService";
 import TextEditor from "./TextEditor";
 import FilePanel from "./FilePanel";
-import { useTheme, Box, Button } from "@mui/material";
+import { useTheme, Box, Button, Typography } from "@mui/material";
 import { toast } from "sonner";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -76,7 +76,7 @@ function ClipField() {
       toast.error("Board is locked");
       return;
     }
-    updateRoomText(code, value, firebaseData, USER_UUID);
+    updateRoomText(code, value, firebaseData);
   };
 
   // Handle typing
@@ -203,11 +203,7 @@ function ClipField() {
   }, [code]);
 
 
-  /* ================= IMAGE HANDLING ================= */
-
-  // Check if file already exists
-  const fileExists = (name, src) =>
-    images.find((img) => img.name === name && img.src === src);
+  /* ================= FILE HANDLING ================= */
 
   // Handle file selection
   const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -307,13 +303,6 @@ function ClipField() {
     // Update Firebase and let the listener handle the UI update naturally
     updateRoom(code, { ...firebaseData, images: updated });
   }, [firebaseData, code]);
-
-  const handleUpdate = useCallback(
-    (field, val) => {
-      updateRoom(code, { ...firebaseData, [field]: val });
-    },
-    [code, firebaseData]
-  );
 
   // Download file
   const handleDownloadFile = useCallback(async (src, name) => {
@@ -444,28 +433,94 @@ function ClipField() {
       </Box>
 
       {/* Lock Dialog */}
-      <Dialog open={lockOpen} onClose={() => setLockOpen(false)}>
-        <DialogTitle>
-          {isLocked ? "Unlock Board" : "Secure This Board"}
+      <Dialog
+        open={lockOpen}
+        onClose={() => setLockOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "20px",
+              backgroundColor: theme.palette.mode === "dark" ? "#141414" : "#ffffff",
+              border: `1px solid ${theme.palette.mode === "dark" ? "#262626" : "#e4e4e7"}`,
+              p: 1.5,
+              boxShadow: theme.palette.mode === "dark"
+                ? "0 20px 60px rgba(0, 0, 0, 0.6)"
+                : "0 20px 60px rgba(0, 0, 0, 0.12)",
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: 600,
+            fontSize: "18px",
+            letterSpacing: "-0.4px",
+            color: theme.palette.mode === "dark" ? "#ffffff" : "#090909",
+          }}
+        >
+          {isLocked ? "Unlock Board" : "Secure Board with PIN"}
         </DialogTitle>
 
         <DialogContent>
+          <Typography
+            sx={{
+              fontSize: "13px",
+              color: theme.palette.mode === "dark" ? "#999999" : "#71717a",
+              mb: 2,
+            }}
+          >
+            {isLocked
+              ? "Enter your 6-digit PIN to re-enable editing and sharing."
+              : "Set a 6-digit SHA-256 PIN to restrict write access to this workspace."}
+          </Typography>
           <TextField
             autoFocus
             fullWidth
             type="password"
-            label="Enter 6-digit PIN"
-            slotProps={{ htmlInput: { maxLength: 6 } }}
+            placeholder="••••••"
+            slotProps={{
+              htmlInput: {
+                maxLength: 6,
+                style: {
+                  textAlign: "center",
+                  letterSpacing: "6px",
+                  fontSize: "20px",
+                  fontFamily: "var(--font-mono)",
+                },
+              },
+            }}
             value={pinInput}
             onChange={(e) =>
               setPinInput(e.target.value.replace(/\D/g, ""))
             }
-            sx={{ mt: 1 }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: theme.palette.mode === "dark" ? "#1c1c1c" : "#f4f4f5",
+                borderRadius: "10px",
+              },
+            }}
           />
         </DialogContent>
 
-        <DialogActions>
-          <Button onClick={() => setLockOpen(false)}>Cancel</Button>
+        <DialogActions sx={{ px: 3, pb: 2, pt: 1, gap: 1 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setLockOpen(false)}
+            sx={{
+              borderRadius: "100px",
+              borderColor: theme.palette.mode === "dark" ? "#262626" : "#e4e4e7",
+              color: theme.palette.mode === "dark" ? "#999999" : "#71717a",
+              "&:hover": {
+                borderColor: theme.palette.mode === "dark" ? "#383838" : "#a1a1aa",
+                color: theme.palette.mode === "dark" ? "#ffffff" : "#090909",
+                backgroundColor: theme.palette.mode === "dark" ? "#1c1c1c" : "#f4f4f5",
+              },
+            }}
+          >
+            Cancel
+          </Button>
 
           <Button
             variant="contained"
@@ -503,8 +558,18 @@ function ClipField() {
               setPinInput("");
               setLockOpen(false);
             }}
+            sx={{
+              borderRadius: "100px",
+              px: 3,
+              fontWeight: 600,
+              backgroundColor: theme.palette.mode === "dark" ? "#ffffff" : "#090909",
+              color: theme.palette.mode === "dark" ? "#000000" : "#ffffff",
+              "&:hover": {
+                backgroundColor: theme.palette.mode === "dark" ? "#ececec" : "#222222",
+              },
+            }}
           >
-            {isLocked ? "Unlock" : "Lock"}
+            {isLocked ? "Unlock" : "Lock Board"}
           </Button>
         </DialogActions>
       </Dialog>

@@ -4,8 +4,6 @@ import {
     Paper,
     Typography,
     Stack,
-    Button,
-    Chip,
     IconButton,
 } from "@mui/material";
 import { TailSpin } from "react-loader-spinner";
@@ -47,30 +45,33 @@ const isImageFile = (file) => {
 function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardInteractionDisabled }) {
     const isImage = isImageFile(file);
     const FileIcon = getFileIcon(file.type || file.fileType);
+    const isDark = theme.palette.mode === "dark";
 
     return (
         <Box
             sx={{
                 p: 1.5,
-                borderRadius: 2,
-                border: `1px solid ${theme.palette.divider}`,
-                backgroundColor: theme.palette.action.hover,
+                borderRadius: "14px",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                backgroundColor: isDark ? "#1c1c1c" : "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                mb: 1.5,
-                transition: "0.2s",
+                gap: 1.5,
+                mb: 1.25,
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                 "&:hover": {
-                    borderColor: theme.palette.primary.main,
-                }
+                    borderColor: isDark ? "#383838" : "#d4d4d8",
+                    transform: "translateY(-1px)",
+                },
             }}
         >
             <Box
                 sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 1,
-                    bgcolor: "background.paper",
+                    width: 44,
+                    height: 44,
+                    borderRadius: "10px",
+                    bgcolor: isDark ? "#141414" : "#f4f4f5",
+                    border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -85,7 +86,7 @@ function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardIn
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
                 ) : (
-                    <FileIcon size={24} color={theme.palette.primary.main} />
+                    <FileIcon size={20} color={isDark ? "#ffffff" : "#090909"} />
                 )}
             </Box>
 
@@ -93,11 +94,23 @@ function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardIn
                 <Typography
                     variant="body2"
                     noWrap
-                    sx={{ fontWeight: 600 }}
+                    sx={{
+                        fontWeight: 600,
+                        fontSize: "13px",
+                        letterSpacing: "-0.13px",
+                        color: isDark ? "#ffffff" : "#090909",
+                    }}
                 >
                     {file.name}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                    variant="caption"
+                    sx={{
+                        color: "#999999",
+                        fontSize: "11px",
+                        fontFamily: "var(--font-mono)",
+                    }}
+                >
                     {formatFileSize(file.bytes)}
                 </Typography>
             </Box>
@@ -106,17 +119,29 @@ function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardIn
                 <IconButton
                     size="small"
                     onClick={() => handleDownloadFile(file.src, file.name)}
-                    sx={{ color: "primary.main" }}
+                    sx={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        color: "#999999",
+                        "&:hover": { color: "#ffffff", backgroundColor: isDark ? "#262626" : "#f4f4f5" },
+                    }}
                 >
-                    <Download size={18} />
+                    <Download size={16} />
                 </IconButton>
                 <IconButton
                     size="small"
-                    color="error"
                     disabled={isBoardInteractionDisabled}
                     onClick={() => handleDeleteFile(file.src)}
+                    sx={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        color: "#999999",
+                        "&:hover": { color: "#ff5577", backgroundColor: "rgba(255, 85, 119, 0.1)" },
+                    }}
                 >
-                    <Trash2 size={18} />
+                    <Trash2 size={16} />
                 </IconButton>
             </Stack>
         </Box>
@@ -134,30 +159,50 @@ function FilePanel({
     handleDeleteFile,
     isBoardInteractionDisabled,
 }) {
+    const isDark = theme.palette.mode === "dark";
+
     return (
         <Paper
-            elevation={3}
+            elevation={0}
             sx={{
                 flex: { xs: "50vh", md: 3 },
                 width: { xs: "100%", md: "auto" },
                 display: "flex",
                 flexDirection: "column",
-                borderRadius: 2,
-                p: 2,
-                backgroundColor: theme.palette.background.paper,
-                overflow: "hidden"
+                borderRadius: "20px", // Framer rounded.xl
+                p: 2.5,
+                backgroundColor: isDark ? "#141414" : "#ffffff",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                boxShadow: isDark ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)" : "0 4px 20px rgba(0, 0, 0, 0.05)",
+                overflow: "hidden",
             }}
         >
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Board Files
+                <Typography
+                    sx={{
+                        fontWeight: 600,
+                        fontSize: "14px",
+                        letterSpacing: "-0.14px",
+                        color: isDark ? "#ffffff" : "#090909",
+                    }}
+                >
+                    Shared Assets
                 </Typography>
-                <Chip
-                    label={`${files.length}/5`}
-                    size="small"
-                    variant="outlined"
-                    sx={{ fontWeight: 600, fontSize: 11 }}
-                />
+                <Box
+                    sx={{
+                        px: 1.25,
+                        py: 0.25,
+                        borderRadius: "100px",
+                        backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5",
+                        border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: "#999999",
+                    }}
+                >
+                    {files.length}/5
+                </Box>
             </Box>
 
             {/* Drop Zone */}
@@ -165,20 +210,19 @@ function FilePanel({
                 ref={fileContainerRef}
                 onClick={() => !isBoardInteractionDisabled && uploadBtnRef.current.click()}
                 sx={{
-                    border: "2px dashed",
-                    borderColor: theme.palette.divider,
-                    borderRadius: 2,
-                    p: 2,
+                    border: `1.5px dashed ${isDark ? "#262626" : "#d4d4d8"}`,
+                    borderRadius: "14px",
+                    p: 2.5,
                     textAlign: "center",
                     cursor: isBoardInteractionDisabled ? "default" : "pointer",
-                    backgroundColor: theme.palette.action.hover,
-                    transition: "0.2s",
+                    backgroundColor: isDark ? "#090909" : "#fafafa",
+                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                     opacity: isBoardInteractionDisabled ? 0.6 : 1,
+                    mb: 2.5,
                     "&:hover": {
-                        borderColor: isBoardInteractionDisabled ? theme.palette.divider : theme.palette.primary.main,
-                        backgroundColor: isBoardInteractionDisabled ? theme.palette.action.hover : "rgba(0,0,0,0.02)",
+                        borderColor: isBoardInteractionDisabled ? (isDark ? "#262626" : "#d4d4d8") : "#0099ff",
+                        boxShadow: isBoardInteractionDisabled ? "none" : "0 0 16px rgba(0, 153, 255, 0.15)",
                     },
-                    mb: 3
                 }}
             >
                 <input
@@ -190,15 +234,47 @@ function FilePanel({
                 />
 
                 {loader ? (
-                    <Box sx={{ py: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-                        <TailSpin height="30" width="30" color={theme.palette.primary.main} />
-                        <Typography variant="caption">Uploading...</Typography>
+                    <Box sx={{ py: 1.5, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+                        <TailSpin height="28" width="28" color="#0099ff" />
+                        <Typography variant="caption" sx={{ color: "#999999", fontWeight: 500 }}>
+                            Syncing asset...
+                        </Typography>
                     </Box>
                 ) : (
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                        <FileUp size={24} style={{ opacity: 0.6, marginBottom: 4 }} />
-                        <Typography variant="caption" display="block" sx={{ textAlign: "center" }}>
-                            Drop files here or click to upload
+                        <Box
+                            sx={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: "50%",
+                                backgroundColor: isDark ? "#141414" : "#f4f4f5",
+                                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                mb: 1.25,
+                            }}
+                        >
+                            <FileUp size={18} color="#0099ff" />
+                        </Box>
+                        <Typography
+                            sx={{
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                color: isDark ? "#ffffff" : "#090909",
+                                letterSpacing: "-0.12px",
+                            }}
+                        >
+                            Drop file or browse
+                        </Typography>
+                        <Typography
+                            sx={{
+                                fontSize: "11px",
+                                color: "#999999",
+                                mt: 0.25,
+                            }}
+                        >
+                            Up to 10MB per asset
                         </Typography>
                     </Box>
                 )}
@@ -209,19 +285,44 @@ function FilePanel({
                 sx={{
                     flex: 1,
                     overflowY: "auto",
-                    pr: 0.5,
                     display: "flex",
                     flexDirection: "column",
-                    backgroundColor: theme.palette.mode === "dark"
-                        ? "rgba(0,0,0,0.12)"
-                        : "rgba(0,0,0,0.02)",
-                    borderRadius: 1,
-                    p: 1
+                    pr: 0.5,
                 }}
             >
                 {files.length === 0 ? (
-                    <Box sx={{ py: 4, textAlign: "center", opacity: 0.4 }}>
-                        <Typography variant="body2">No files shared yet</Typography>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            p: 3,
+                            borderRadius: "14px",
+                            backgroundColor: isDark ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)",
+                            border: `1px dashed ${isDark ? "#1c1c1c" : "#e4e4e7"}`,
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                fontSize: "13px",
+                                color: "#999999",
+                                fontWeight: 500,
+                                letterSpacing: "-0.13px",
+                            }}
+                        >
+                            No assets uploaded yet
+                        </Typography>
+                        <Typography
+                            sx={{
+                                fontSize: "11px",
+                                color: "#666666",
+                                mt: 0.5,
+                            }}
+                        >
+                            Images and documents sync instantly
+                        </Typography>
                     </Box>
                 ) : (
                     files.map((file, index) => (
@@ -237,8 +338,16 @@ function FilePanel({
                 )}
             </Box>
 
-            <Typography variant="caption" sx={{ mt: 2, opacity: 0.5, fontSize: 10 }}>
-                Files up to 10MB are instantly synced with all active board members.
+            <Typography
+                sx={{
+                    mt: 2,
+                    fontSize: "11px",
+                    color: "#666666",
+                    textAlign: "center",
+                    letterSpacing: "-0.11px",
+                }}
+            >
+                End-to-end synchronized across devices
             </Typography>
         </Paper>
     );

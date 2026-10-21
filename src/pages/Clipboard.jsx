@@ -5,20 +5,12 @@ import NoInternetComponent from "../components/common/NoInternetComponent";
 import { pageLogging } from "../services/analyticsService";
 import { Toaster, toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
-import { userIdentifier } from "../utils/userIdentifier";
+import { Helmet } from "react-helmet-async";
 
-
-const USER_UUID = userIdentifier() || "";
 
 function Clipboard({ toggleTheme, mode }) {
   const navigate = useNavigate();
   const [internetStatus, setInternetStatus] = useState(navigator.onLine);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const uuid = userIdentifier();
-    setUser(uuid);
-  }, []);
 
   // Board History Logic (Obfuscated Storage)
   const { code } = useParams();
@@ -72,6 +64,9 @@ function Clipboard({ toggleTheme, mode }) {
 
   return (
     <>
+      <Helmet>
+        <title>{code ? `Board ${code} | SyncBoard` : "Workspace | SyncBoard"}</title>
+      </Helmet>
       <ClipNavbar
         internetStatus={internetStatus}
         toggleTheme={toggleTheme}
@@ -85,17 +80,22 @@ function Clipboard({ toggleTheme, mode }) {
       )}
 
       <Toaster
+        theme={mode === "dark" ? "dark" : "light"}
         position="bottom-right"
         closeButton
         richColors
         toastOptions={{
           style: {
-            minHeight: "60px",
-            padding: "16px 20px",
-            borderRadius: "20px",
-            fontSize: "14px",
+            minHeight: "54px",
+            padding: "14px 18px",
+            borderRadius: "16px",
+            fontSize: "13px",
             fontWeight: 500,
-            backdropFilter: "blur(12px)",
+            backgroundColor: mode === "dark" ? "#141414" : "#ffffff",
+            border: `1px solid ${mode === "dark" ? "#262626" : "#e4e4e7"}`,
+            color: mode === "dark" ? "#ffffff" : "#090909",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 16px 40px rgba(0, 0, 0, 0.4)",
           },
         }}
       />

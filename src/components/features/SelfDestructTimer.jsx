@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Typography,
   IconButton,
   Menu,
   MenuItem,
   Tooltip,
   Chip,
+  useTheme,
 } from "@mui/material";
 import { Timer as TimerIcon, TimerOff as TimerOffIcon } from "@mui/icons-material";
 import { setBoardExpiration } from "../../services/firebaseService";
 
 export default function SelfDestructTimer({ code, expirationTime }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const [anchorEl, setAnchorEl] = useState(null);
   const [timeLeft, setTimeLeft] = useState("");
 
@@ -55,37 +57,52 @@ export default function SelfDestructTimer({ code, expirationTime }) {
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       {expirationTime && (
         <Chip
-          icon={<TimerIcon sx={{ fontSize: "14px !important", color: "inherit" }} />}
+          icon={<TimerIcon sx={{ fontSize: "14px !important", color: "#ff5577 !important" }} />}
           label={timeLeft}
           size="small"
-          sx={{ 
-            fontWeight: 800, 
-            backgroundColor: "rgba(211, 47, 47, 0.15)",
-            color: "error.main",
-            border: "1px solid rgba(211, 47, 47, 0.3)",
-            animation: "pulse 2s infinite",
-            "@keyframes pulse": {
-                "0%": { opacity: 0.8 },
-                "50%": { opacity: 1, transform: "scale(1.05)" },
-                "100%": { opacity: 0.8 }
-            }
+          sx={{
+            fontFamily: "var(--font-mono)",
+            fontWeight: 600,
+            fontSize: "12px",
+            letterSpacing: "0.5px",
+            backgroundColor: "rgba(255, 85, 119, 0.12)",
+            color: "#ff5577",
+            border: "1px solid rgba(255, 85, 119, 0.3)",
+            borderRadius: "100px",
+            px: 0.5,
           }}
         />
       )}
 
-      <Tooltip title="Self-Destruct Timer">
+      <Tooltip title="Auto Self-Destruct Timer">
         <IconButton
           onClick={handleClick}
           size="small"
-          sx={{ 
-            color: expirationTime ? "error.main" : "primary.main",
-            backgroundColor: expirationTime ? "rgba(211, 47, 47, 0.1)" : "rgba(59, 130, 246, 0.1)",
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            color: expirationTime ? "#ff5577" : (isDark ? "#999999" : "#71717a"),
+            border: `1px solid ${
+              expirationTime
+                ? "rgba(255, 85, 119, 0.35)"
+                : (isDark ? "#262626" : "#e4e4e7")
+            }`,
+            backgroundColor: expirationTime
+              ? "rgba(255, 85, 119, 0.08)"
+              : (isDark ? "#141414" : "#f4f4f5"),
+            transition: "all 0.2s ease",
             "&:hover": {
-                backgroundColor: expirationTime ? "rgba(211, 47, 47, 0.2)" : "rgba(59, 130, 246, 0.2)",
-            }
+              color: expirationTime ? "#ff5577" : (isDark ? "#ffffff" : "#090909"),
+              borderColor: expirationTime ? "#ff5577" : (isDark ? "#383838" : "#a1a1aa"),
+              backgroundColor: expirationTime
+                ? "rgba(255, 85, 119, 0.16)"
+                : (isDark ? "#1c1c1c" : "#eaeaea"),
+              transform: "scale(1.05)",
+            },
           }}
         >
-          {expirationTime ? <TimerIcon fontSize="small" /> : <TimerOffIcon fontSize="small" />}
+          {expirationTime ? <TimerIcon sx={{ fontSize: 18 }} /> : <TimerOffIcon sx={{ fontSize: 18 }} />}
         </IconButton>
       </Tooltip>
 
@@ -95,14 +112,68 @@ export default function SelfDestructTimer({ code, expirationTime }) {
         onClose={handleClose}
         slotProps={{
           paper: {
-            sx: { borderRadius: 2, mt: 1 },
+            sx: {
+              borderRadius: "16px",
+              mt: 1,
+              backgroundColor: isDark ? "#141414" : "#ffffff",
+              border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              boxShadow: isDark
+                ? "0 16px 40px rgba(0, 0, 0, 0.5)"
+                : "0 16px 40px rgba(0, 0, 0, 0.08)",
+              p: 0.5,
+              minWidth: 160,
+            },
           },
         }}
       >
-        <MenuItem onClick={() => handleSetTimer(null)}>Disable Timer</MenuItem>
-        <MenuItem onClick={() => handleSetTimer(10)}>10 Minutes</MenuItem>
-        <MenuItem onClick={() => handleSetTimer(60)}>1 Hour</MenuItem>
-        <MenuItem onClick={() => handleSetTimer(1440)}>24 Hours</MenuItem>
+        <MenuItem
+          onClick={() => handleSetTimer(null)}
+          sx={{
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: isDark ? "#999999" : "#71717a",
+            "&:hover": { backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5", color: isDark ? "#ffffff" : "#090909" },
+          }}
+        >
+          Disable Timer
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleSetTimer(10)}
+          sx={{
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: isDark ? "#ffffff" : "#090909",
+            "&:hover": { backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5", color: "#0099ff" },
+          }}
+        >
+          10 Minutes
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleSetTimer(60)}
+          sx={{
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: isDark ? "#ffffff" : "#090909",
+            "&:hover": { backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5", color: "#0099ff" },
+          }}
+        >
+          1 Hour
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleSetTimer(1440)}
+          sx={{
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: isDark ? "#ffffff" : "#090909",
+            "&:hover": { backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5", color: "#0099ff" },
+          }}
+        >
+          24 Hours
+        </MenuItem>
       </Menu>
     </Box>
   );

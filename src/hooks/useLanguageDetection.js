@@ -15,7 +15,7 @@ const LANGUAGE_PATTERNS = {
     javascript: [
         // Smoking guns — unique to JS/TS
         { pattern: /\b(const|let)\s+\w+\s*=\s*(async\s+)?\(/, score: 8 },
-        { pattern: /\s=>\s*[\{\(]/, score: 8 },
+        { pattern: /\s=>\s*[{()]/, score: 8 },
         { pattern: /\$\{[^}]+\}/, score: 7 },
         { pattern: /\bconsole\.(log|warn|error|info)\s*\(/, score: 9 },
         { pattern: /\b(document|window|navigator|localStorage)\b/, score: 8 },
@@ -43,7 +43,7 @@ const LANGUAGE_PATTERNS = {
 
     python: [
         // Smoking guns
-        { pattern: /^def\s+\w+\s*\(.*\)\s*(->\s*[\w\[\], |]+)?\s*:/m, score: 10 },
+        { pattern: /^def\s+\w+\s*\(.*\)\s*(->\s*[\w[\], |]+)?\s*:/m, score: 10 },
         { pattern: /^class\s+\w+(\([\w, ]+\))?\s*:/m, score: 10 },
         { pattern: /\bif\s+__name__\s*==\s*['"]__main__['"]/, score: 15 },
         { pattern: /\bprint\s*\(/, score: 5 },
@@ -85,7 +85,7 @@ const LANGUAGE_PATTERNS = {
         { pattern: /\busing\s+System(\.\w+)*;/, score: 12 },
         { pattern: /\bnamespace\s+\w+(\.\w+)*\s*\{/, score: 10 },
         { pattern: /\b(Console\.(Write|WriteLine)|Debug\.Log)\s*\(/, score: 10 },
-        { pattern: /\b(public|private|protected)\s+(override\s+|static\s+|async\s+)?\w+\s+\w+\s*[\({]/, score: 5 },
+        { pattern: /\b(public|private|protected)\s+(override\s+|static\s+|async\s+)?\w+\s+\w+\s*[({]/, score: 5 },
         { pattern: /\[\w+(Attribute)?\]/, score: 7 },
         { pattern: /\bvar\s+\w+\s*=/, score: 4 },
         { pattern: /=>\s*\{|=>\s*\w+/, score: 4 },
@@ -102,14 +102,14 @@ const LANGUAGE_PATTERNS = {
         { pattern: /\bchan\s+\w+|<-\s*\w+|\w+\s*<-/, score: 10 },
         { pattern: /\bdefer\s+\w+/, score: 8 },
         { pattern: /\bfmt\.(Print|Println|Printf|Sprintf|Errorf)\s*\(/, score: 12 },
-        { pattern: /\b(make|append)\s*\([\[\]a-zA-Z]+/, score: 7 },
+        { pattern: /\b(make|append)\s*\([[\]a-zA-Z]+/, score: 7 },
     ],
 
     rust: [
         { pattern: /\bfn\s+\w+\s*(<.*>)?\s*\(.*\)\s*(->\s*[\w<>&']+)?\s*\{/, score: 12 },
         { pattern: /\blet\s+(mut\s+)?\w+\s*:\s*\w+/, score: 9 },
         { pattern: /\bimpl\s+\w+(\s+for\s+\w+)?\s*\{/, score: 12 },
-        { pattern: /\b(println!|eprintln!|vec!|format!|panic!|assert!|dbg!)\s*[(\[]/, score: 12 },
+        { pattern: /\b(println!|eprintln!|vec!|format!|panic!|assert!|dbg!)\s*(\(|\[)/, score: 12 },
         { pattern: /\buse\s+\w+::\w+/, score: 8 },
         { pattern: /\b(match\s+\w+|Some\(|None\b|Ok\(|Err\()/, score: 8 },
         { pattern: /&(mut\s+)?\w+|'[a-z]+\s+\w+|<'[a-z]+>/, score: 7 },
@@ -124,7 +124,7 @@ const LANGUAGE_PATTERNS = {
         { pattern: /\bnamespace\s+[\w\\]+;/, score: 9 },
         { pattern: /\buse\s+[\w\\]+;/, score: 6 },
         { pattern: /->|\$this->/, score: 4 },
-        { pattern: /\b(require|include)(_once)?\s*['"\(]/, score: 8 },
+        { pattern: /\b(require|include)(_once)?\s*['"(]/, score: 8 },
     ],
 
     ruby: [
@@ -257,7 +257,7 @@ const computeScores = (sample) => {
     }
 
     if (totals.json > 0 && totals.yaml > 0) {
-        const looksLikeJson = /^\s*[\{\[]/.test(sample) && /[\}\]]\s*$/.test(sample);
+        const looksLikeJson = /^\s*[{[]/.test(sample) && /[}\]]\s*$/.test(sample);
         if (looksLikeJson) totals.yaml = 0;
         else totals.json = 0;
     }

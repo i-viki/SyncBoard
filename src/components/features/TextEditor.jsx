@@ -5,7 +5,6 @@ import {
     Typography,
     Stack,
     Chip,
-    Avatar,
     Tooltip,
     IconButton,
     Select,
@@ -30,7 +29,7 @@ import { useLanguageDetection } from "../../hooks/useLanguageDetection";
 import Prism from "prismjs";
 import "../../prism.css";
 
-// Import some languages
+// Import languages
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-css";
@@ -96,21 +95,16 @@ function TextEditor({
 
     // Sync local value with incoming remote changes
     useEffect(() => {
-        if (value !== localValue) {
-            setLocalValue(value);
-        }
+        setLocalValue(value);
     }, [value]);
 
     const handleTextChange = (newVal) => {
-        // Update UI immediately
         setLocalValue(newVal);
 
-        // Debounce the Firebase write to save database load
         if (debounceTimer.current) {
             clearTimeout(debounceTimer.current);
         }
 
-        // If the user clears EVERYTHING, we want it to reflect quickly
         const delay = newVal === "" ? 200 : 500;
 
         debounceTimer.current = setTimeout(() => {
@@ -169,125 +163,211 @@ function TextEditor({
         }
     };
 
+    const isDark = theme.palette.mode === "dark";
+
     return (
         <Paper
-            elevation={3}
+            elevation={0}
             sx={{
                 flex: { xs: "50vh", md: 7 },
                 width: { xs: "100%", md: "auto" },
                 display: "flex",
                 flexDirection: "column",
-                borderRadius: 2,
+                borderRadius: "20px", // Framer rounded.xl
                 overflow: "hidden",
-                backgroundColor: theme.palette.background.paper,
+                backgroundColor: isDark ? "#141414" : "#ffffff",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                boxShadow: isDark ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)" : "0 4px 20px rgba(0, 0, 0, 0.05)",
             }}
         >
             {/* Topbar */}
             <Box
                 sx={{
-                    px: 2,
-                    py: 1,
+                    px: 2.5,
+                    py: 1.5,
                     display: "flex",
                     flexWrap: "wrap",
-                    gap: 1,
+                    gap: 1.5,
                     justifyContent: "space-between",
                     alignItems: "center",
-                    borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-                    backgroundColor: theme.palette.action.hover,
+                    borderBottom: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                    backgroundColor: isDark ? "#141414" : "#fafafa",
                 }}
             >
-                <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center" }}>
-                    <Typography
-                        variant="caption"
+                <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+                    <Box
                         sx={{
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            letterSpacing: 1,
-                            fontSize: { xs: 9, sm: 12 },
-                            opacity: 0.8
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.8,
+                            px: 1.5,
+                            py: 0.4,
+                            borderRadius: "100px",
+                            backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5",
+                            border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
                         }}
                     >
-                        Editor
-                    </Typography>
-
-                    <FormControl size="small" variant="standard">
-                        <Select
-                            value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
+                        <Typography
                             sx={{
-                                fontSize: 12,
                                 fontWeight: 600,
-                                color: "primary.main",
-                                "&:before, &:after": { border: "none !important" }
+                                fontSize: "11px",
+                                letterSpacing: "0.06em",
+                                textTransform: "uppercase",
+                                color: "#999999",
                             }}
                         >
-                            {LANGUAGES.map((lang) => (
-                                <MenuItem key={lang.value} value={lang.value} sx={{ fontSize: 13 }}>
-                                    {lang.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                            Syntax
+                        </Typography>
+
+                        <FormControl size="small" variant="standard">
+                            <Select
+                                value={language}
+                                onChange={(e) => setLanguage(e.target.value)}
+                                disableUnderline
+                                sx={{
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    color: isDark ? "#ffffff" : "#090909",
+                                    fontFamily: "var(--font-mono)",
+                                    "& .MuiSelect-select": {
+                                        py: 0.2,
+                                        pr: 2,
+                                    },
+                                    "& svg": {
+                                        color: "#999999",
+                                    },
+                                }}
+                            >
+                                {LANGUAGES.map((lang) => (
+                                    <MenuItem
+                                        key={lang.value}
+                                        value={lang.value}
+                                        sx={{
+                                            fontSize: 13,
+                                            fontFamily: "var(--font-mono)",
+                                        }}
+                                    >
+                                        {lang.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
 
                     {language === "auto" && (
                         <Chip
-                            icon={<AutoAwesomeIcon style={{ fontSize: 14 }} />}
+                            icon={<AutoAwesomeIcon sx={{ fontSize: "13px !important", color: "#0099ff !important" }} />}
                             label={activeLanguage.toUpperCase()}
                             size="small"
-                            variant="outlined"
-                            sx={{ height: 20, fontSize: 10, opacity: 0.8 }}
+                            sx={{
+                                height: 24,
+                                fontSize: 10,
+                                fontWeight: 700,
+                                fontFamily: "var(--font-mono)",
+                                letterSpacing: "0.5px",
+                                backgroundColor: isDark ? "rgba(0, 153, 255, 0.1)" : "rgba(0, 153, 255, 0.08)",
+                                color: "#0099ff",
+                                border: "1px solid rgba(0, 153, 255, 0.25)",
+                            }}
                         />
                     )}
                 </Stack>
 
-                <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }} sx={{ alignItems: "center" }}>
-                    <Chip
-                        avatar={
-                            <Tooltip title="Number of words">
-                                <Avatar
-                                    sx={{
-                                        bgcolor: "action.hover",
-                                        color: "text.secondary",
-                                        fontWeight: 700,
-                                        fontSize: 12,
-                                        border: (theme) => `1px solid ${theme.palette.divider}`,
-                                    }}
-                                >
-                                    {wordCount}
-                                </Avatar>
-                            </Tooltip>
-                        }
-                        label={`${letterCount} chars`}
-                        variant="outlined"
+                {/* Counters and Controls */}
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <Box
                         sx={{
-                            height: 30,
-                            fontWeight: 200,
-                            borderRadius: 999,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            px: 1.5,
+                            py: 0.4,
+                            borderRadius: "100px",
+                            backgroundColor: isDark ? "#1c1c1c" : "#f4f4f5",
+                            border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
                         }}
-                    />
+                    >
+                        <Typography sx={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "#ffffff", fontWeight: 600 }}>
+                            {wordCount} <Box component="span" sx={{ color: "#999999", fontWeight: 400 }}>words</Box>
+                        </Typography>
+                        <Box sx={{ width: 3, height: 3, borderRadius: "50%", bgcolor: "#999999" }} />
+                        <Typography sx={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "#ffffff", fontWeight: 600 }}>
+                            {letterCount} <Box component="span" sx={{ color: "#999999", fontWeight: 400 }}>chars</Box>
+                        </Typography>
+                    </Box>
 
-                    <Tooltip title="Select all">
-                        <IconButton size="small" onClick={handleSelectAll}>
-                            <SelectAllIcon fontSize="small" />
+                    {/* Circular Action Buttons (Framer button-icon-circular) */}
+                    <Tooltip title="Select all text">
+                        <IconButton
+                            size="small"
+                            onClick={handleSelectAll}
+                            sx={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: "50%",
+                                color: "#999999",
+                                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                                backgroundColor: isDark ? "#1c1c1c" : "#ffffff",
+                                "&:hover": { color: "#ffffff", borderColor: "#3a3a3a", backgroundColor: isDark ? "#222222" : "#f4f4f5" },
+                            }}
+                        >
+                            <SelectAllIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                     </Tooltip>
 
-                    <Tooltip title="Copy all">
-                        <IconButton size="small" onClick={handleCopyAll}>
-                            <ContentCopyIcon fontSize="small" />
+                    <Tooltip title="Copy all text">
+                        <IconButton
+                            size="small"
+                            onClick={handleCopyAll}
+                            sx={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: "50%",
+                                color: "#999999",
+                                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                                backgroundColor: isDark ? "#1c1c1c" : "#ffffff",
+                                "&:hover": { color: "#ffffff", borderColor: "#3a3a3a", backgroundColor: isDark ? "#222222" : "#f4f4f5" },
+                            }}
+                        >
+                            <ContentCopyIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                     </Tooltip>
 
                     <Tooltip title="Paste from clipboard">
-                        <IconButton disabled={isBoardInteractionDisabled} size="small" onClick={handlePasteClipboard}>
-                            <ContentPasteIcon fontSize="small" />
+                        <IconButton
+                            disabled={isBoardInteractionDisabled}
+                            size="small"
+                            onClick={handlePasteClipboard}
+                            sx={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: "50%",
+                                color: "#999999",
+                                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                                backgroundColor: isDark ? "#1c1c1c" : "#ffffff",
+                                "&:hover": { color: "#ffffff", borderColor: "#3a3a3a", backgroundColor: isDark ? "#222222" : "#f4f4f5" },
+                            }}
+                        >
+                            <ContentPasteIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                     </Tooltip>
 
                     {letterCount > 1 && (
-                        <Tooltip title="Download text">
-                            <IconButton size="small" onClick={handleDownload}>
-                                <DownloadIcon fontSize="small" />
+                        <Tooltip title="Download text as file">
+                            <IconButton
+                                size="small"
+                                onClick={handleDownload}
+                                sx={{
+                                    width: 34,
+                                    height: 34,
+                                    borderRadius: "50%",
+                                    color: "#999999",
+                                    border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                                    backgroundColor: isDark ? "#1c1c1c" : "#ffffff",
+                                    "&:hover": { color: "#ffffff", borderColor: "#3a3a3a", backgroundColor: isDark ? "#222222" : "#f4f4f5" },
+                                }}
+                            >
+                                <DownloadIcon sx={{ fontSize: 16 }} />
                             </IconButton>
                         </Tooltip>
                     )}
@@ -297,18 +377,37 @@ function TextEditor({
                             disabled={isBoardInteractionDisabled}
                             size="small"
                             onClick={handleClearAll}
+                            sx={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: "50%",
+                                color: "#999999",
+                                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                                backgroundColor: isDark ? "#1c1c1c" : "#ffffff",
+                                "&:hover": { color: "#ff5577", borderColor: "rgba(255, 85, 119, 0.4)", backgroundColor: "rgba(255, 85, 119, 0.08)" },
+                            }}
                         >
-                            <ClearAllIcon fontSize="small" />
+                            <ClearAllIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                     </Tooltip>
 
-                    <Tooltip title={isLocked ? "Unlock board" : "Lock board"}>
-                        <IconButton size="small" onClick={() => setLockOpen(true)}>
-                            {isLocked ? (
-                                <LockIcon color="error" fontSize="small" />
-                            ) : (
-                                <LockOpenIcon color="primary" fontSize="small" />
-                            )}
+                    <Tooltip title={isLocked ? "Unlock board with PIN" : "Lock board with PIN"}>
+                        <IconButton
+                            size="small"
+                            onClick={() => setLockOpen(true)}
+                            sx={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: "50%",
+                                color: isLocked ? "#ff5577" : "#0099ff",
+                                border: `1px solid ${isLocked ? "rgba(255, 85, 119, 0.35)" : "rgba(0, 153, 255, 0.35)"}`,
+                                backgroundColor: isLocked ? "rgba(255, 85, 119, 0.1)" : "rgba(0, 153, 255, 0.1)",
+                                "&:hover": {
+                                    backgroundColor: isLocked ? "rgba(255, 85, 119, 0.2)" : "rgba(0, 153, 255, 0.2)",
+                                },
+                            }}
+                        >
+                            {isLocked ? <LockIcon sx={{ fontSize: 16 }} /> : <LockOpenIcon sx={{ fontSize: 16 }} />}
                         </IconButton>
                     </Tooltip>
                 </Stack>
@@ -320,24 +419,23 @@ function TextEditor({
                     display: "flex",
                     flex: 1,
                     overflow: "hidden",
-                    backgroundColor: theme.palette.mode === "dark"
-                        ? "rgba(0,0,0,0.12)"
-                        : "rgba(0,0,0,0.02)"
+                    backgroundColor: isDark ? "#090909" : "#fbfbfb", // Pure dark canvas ground
                 }}
             >
+                {/* Gutter with line numbers */}
                 <Box
                     ref={lineNumbersRef}
                     sx={{
-                        width: 48,
+                        width: 50,
                         px: 1,
-                        py: "14px",
+                        py: "16px",
                         textAlign: "right",
-                        borderRight: (theme) =>
-                            `1px solid ${theme.palette.divider}`,
-                        fontFamily: "'Fira Code', monospace",
-                        fontSize: 13,
-                        backgroundColor: theme.palette.action.hover,
-                        color: theme.palette.text.disabled,
+                        borderRight: `1px solid ${isDark ? "#1a1a1a" : "#e4e4e7"}`,
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "13px",
+                        lineHeight: 1.6,
+                        backgroundColor: isDark ? "#0f0f0f" : "#f4f4f5",
+                        color: isDark ? "#444444" : "#a1a1aa",
                         overflow: "hidden",
                         userSelect: "none",
                     }}
@@ -348,43 +446,44 @@ function TextEditor({
                 </Box>
 
                 <Box sx={{ flex: 1, position: "relative", overflow: "hidden" }}>
-                    {/* The Background Highlight Layer */}
+                    {/* Syntax Highlight Layer */}
                     <pre
                         ref={preRef}
                         aria-hidden="true"
                         style={{
                             margin: 0,
-                            padding: "14px 16px",
+                            padding: "16px 18px",
                             position: "absolute",
                             top: 0,
                             left: 0,
                             width: "100%",
                             height: "100%",
                             overflow: "hidden",
-                            fontFamily: "'Fira Code', monospace",
+                            fontFamily: "var(--font-mono)",
                             fontSize: 14,
                             lineHeight: 1.6,
                             whiteSpace: "pre-wrap",
                             wordBreak: "break-all",
                             pointerEvents: "none",
                             boxSizing: "border-box",
-                            color: theme.palette.text.primary,
+                            color: isDark ? "#ffffff" : "#090909",
                         }}
                         dangerouslySetInnerHTML={{ __html: highlight(localValue) + "\n" }}
                     />
 
-                    {/* The Real Editable Textarea */}
+                    {/* Textarea Input Layer */}
                     <textarea
                         ref={textInputFieldRef}
                         value={localValue}
                         onChange={(e) => handleTextChange(e.target.value)}
                         onScroll={syncScroll}
                         disabled={isBoardInteractionDisabled}
+                        placeholder={isBoardInteractionDisabled ? "Board is locked with PIN" : "Start typing, paste text, or drag snippets here..."}
                         spellCheck="false"
                         style={{
                             display: "block",
                             margin: 0,
-                            padding: "14px 16px",
+                            padding: "16px 18px",
                             width: "100%",
                             height: "100%",
                             position: "absolute",
@@ -393,16 +492,16 @@ function TextEditor({
                             border: "none",
                             outline: "none",
                             resize: "none",
-                            fontFamily: "'Fira Code', monospace",
+                            fontFamily: "var(--font-mono)",
                             fontSize: 14,
                             lineHeight: 1.6,
                             backgroundColor: "transparent",
-                            color: "transparent", // Hide the text, but keep the caret
-                            caretColor: theme.palette.text.primary,
+                            color: "transparent",
+                            caretColor: "#0099ff", // Framer accent blue caret
                             overflowY: "scroll",
                             overflowX: "hidden",
                             scrollbarWidth: "thin",
-                            scrollbarColor: "rgba(155, 155, 155, 0.5) transparent",
+                            scrollbarColor: "rgba(100, 100, 100, 0.4) transparent",
                             whiteSpace: "pre-wrap",
                             wordBreak: "break-all",
                             boxSizing: "border-box",
@@ -418,7 +517,17 @@ function TextEditor({
                 onClose={handleCloseToast}
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
             >
-                <Alert onClose={handleCloseToast} severity="success" sx={{ width: "100%" }}>
+                <Alert
+                    onClose={handleCloseToast}
+                    severity="success"
+                    sx={{
+                        width: "100%",
+                        backgroundColor: "#141414",
+                        color: "#ffffff",
+                        border: "1px solid #262626",
+                        borderRadius: "100px",
+                    }}
+                >
                     Text content downloaded successfully!
                 </Alert>
             </Snackbar>

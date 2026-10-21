@@ -1,46 +1,29 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import {
   AppBar,
   Toolbar,
   IconButton,
   Container,
   Divider,
-  MenuItem,
   Drawer,
   Box,
   Typography,
   Button,
+  Tooltip,
 } from "@mui/material";
-import { 
-  Menu as MenuIcon, 
-  CloseRounded as CloseRoundedIcon, 
-  DarkMode as DarkModeIcon, 
-  LightMode as LightModeIcon 
+import {
+  Menu as MenuIcon,
+  CloseRounded as CloseRoundedIcon,
+  DarkModeOutlined as DarkModeIcon,
+  LightModeOutlined as LightModeIcon,
 } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
-
-
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  borderRadius: theme.shape.borderRadius * 2,
-  backdropFilter: "blur(18px)",
-  WebkitBackdropFilter: "blur(18px)",
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(20, 24, 31, 0.65)"
-      : "rgba(255, 255, 255, 0.7)",
-  border: `1px solid ${theme.palette.divider}`,
-  boxShadow: theme.shadows[3],
-  padding: "8px 16px",
-}));
 
 export default function Navbar({ toggleTheme, mode }) {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
+  const isDark = mode === "dark";
 
   const toggleDrawer = (state) => setOpen(state);
 
@@ -54,121 +37,203 @@ export default function Navbar({ toggleTheme, mode }) {
     <AppBar
       position="sticky"
       elevation={0}
-      sx={{ bgcolor: "transparent", color: "text.primary", boxShadow: "none", top: 16 }}
+      sx={{
+        top: 0,
+        zIndex: 1100,
+        backgroundColor: isDark ? "rgba(9, 9, 9, 0.85)" : "rgba(250, 250, 250, 0.85)",
+        backdropFilter: "blur(16px) saturate(180%)",
+        WebkitBackdropFilter: "blur(16px) saturate(180%)",
+        borderBottom: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+        boxShadow: "none",
+        transition: "background-color 0.2s ease, border-color 0.2s ease",
+      }}
     >
       <Container maxWidth="lg">
-        <StyledToolbar disableGutters>
-          {/* Left side */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            height: 56,
+            minHeight: "56px !important",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Brand Wordmark & Icon */}
+          <Box
+            component={Link}
+            to="/"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.25,
+              textDecoration: "none",
+              color: isDark ? "#ffffff" : "#090909",
+              transition: "opacity 0.15s ease",
+              "&:hover": { opacity: 0.8 },
+            }}
+          >
             <Box
-              component={Link}
-              to="/"
+              component="img"
+              src="/assets/pasteboard_logo.png"
+              alt="SyncBoard Logo"
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                textDecoration: "none",
-                color: "text.primary",
+                width: 22,
+                height: 22,
+                objectFit: "contain",
+              }}
+            />
+            <Typography
+              sx={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 600,
+                fontSize: "15px",
+                letterSpacing: "-0.035em",
+                color: isDark ? "#ffffff" : "#090909",
               }}
             >
-              <Box
-                component="img"
-                src="/assets/pasteboard_logo.png"
-                alt="SyncBoard Logo"
-                sx={{
-                  width: 28,
-                  height: 28,
-                  objectFit: "contain",
-                  transition: "transform .25s ease",
-                  "&:hover": { transform: "rotate(-6deg) scale(1.05)" },
-                }}
-              />
-              <Typography variant="h6" sx={{ 
-                fontWeight: 700, 
-                lineHeight: 1,
-                background: (theme) =>
-                  theme.palette.mode === "dark"
-                    ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
-                    : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-                SyncBoard
-              </Typography>
-            </Box>
+              SyncBoard
+            </Typography>
+          </Box>
 
-            {/* Desktop nav */}
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                gap: 1,
-                position: "relative",
-              }}
-            >
-              {navItems.map((item, index) => {
-                const isActive = currentPath === item.path;
-                return (
-                  <Box key={item.label} sx={{ position: "relative" }}>
-                    <Button
-                      component={Link}
-                      to={item.path}
-                      sx={{
-                        color: isActive ? "primary.main" : "text.primary",
-                        fontWeight: isActive ? 600 : 500,
-                        borderRadius: 999,
-                        px: 2,
-                        py: 1,
-                        transition: "color 0.3s",
-                        backgroundColor: "transparent",
-                        // transition: "all .2s ease",
-                        "&:hover": {
-                          backgroundColor:
-                            mode === "dark"
-                              ? "rgba(255,255,255,0.08)"
-                              : "rgba(0,0,0,0.06)",
-                        },
-                      }}
-                      size="small"
-                    >
-                      {item.label}
-                    </Button>
-                    {/* Sliding highlight
-                    {isActive && (
-                      <Box
-                        sx={{
+          {/* Desktop Framer Navigation Links */}
+          <Box
+            component="nav"
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            {navItems.map((item) => {
+              const isActive = currentPath === item.path;
+              return (
+                <Box
+                  key={item.label}
+                  component={Link}
+                  to={item.path}
+                  sx={{
+                    position: "relative",
+                    fontSize: "14px",
+                    fontWeight: isActive ? 600 : 500,
+                    letterSpacing: "-0.14px",
+                    color: isActive
+                      ? (isDark ? "#ffffff" : "#090909")
+                      : (isDark ? "#999999" : "#71717a"),
+                    textDecoration: "none",
+                    py: 2,
+                    transition: "color 0.15s ease",
+                    "&:hover": {
+                      color: isDark ? "#ffffff" : "#090909",
+                    },
+                    "&::after": isActive
+                      ? {
+                          content: '""',
                           position: "absolute",
                           bottom: 0,
-                          left: "10%",
-                          width: "80%",
-                          height: 3,
-                          bgcolor: "primary.main",
-                          borderRadius: 2,
-                          transition: "all 0.3s ease",
-                        }}
-                      />
-                    )} */}
-                  </Box>
-                );
-              })}
-            </Box>
+                          left: 0,
+                          right: 0,
+                          height: "2px",
+                          backgroundColor: isDark ? "#ffffff" : "#090909",
+                          borderRadius: "1px",
+                        }
+                      : {},
+                  }}
+                >
+                  {item.label}
+                </Box>
+              );
+            })}
           </Box>
 
-          {/* Desktop right theme toggle */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1, alignItems: "center" }}>
-            <IconButton onClick={toggleTheme} sx={{ color: "text.primary" }}>
-              {mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
-            </IconButton>
+          {/* Right Action Suite: Theme Toggle & Launch CTA */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 1.5 }}>
+            {/* Theme Toggle Button */}
+            <Tooltip title={isDark ? "Switch to light mode" : "Switch to dark mode"}>
+              <IconButton
+                onClick={toggleTheme}
+                size="small"
+                aria-label="Toggle theme"
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  color: isDark ? "#999999" : "#71717a",
+                  transition: "color 0.15s ease, background-color 0.15s ease",
+                  "&:hover": {
+                    color: isDark ? "#ffffff" : "#090909",
+                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+                  },
+                }}
+              >
+                {isDark ? (
+                  <LightModeIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <DarkModeIcon sx={{ fontSize: 18 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+
+            {/* Launch Board Primary CTA Pill */}
+            <Button
+              component={Link}
+              to="/explore"
+              variant="contained"
+              size="small"
+              sx={{
+                borderRadius: "100px",
+                px: 2,
+                py: 0.65,
+                fontSize: "13px",
+                fontWeight: 600,
+                letterSpacing: "-0.13px",
+                backgroundColor: isDark ? "#ffffff" : "#090909",
+                color: isDark ? "#000000" : "#ffffff",
+                boxShadow: "none",
+                transition: "background-color 0.15s ease, transform 0.1s ease",
+                "&:hover": {
+                  backgroundColor: isDark ? "#ececec" : "#222222",
+                  boxShadow: "none",
+                },
+                "&:active": {
+                  transform: "scale(0.98)",
+                },
+              }}
+            >
+              Get Started
+            </Button>
           </Box>
 
-          {/* Mobile section */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
-            <IconButton onClick={toggleTheme} sx={{ color: "text.primary" }}>
-              {mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
-            </IconButton>
-            <IconButton onClick={() => toggleDrawer(true)} sx={{ color: "text.primary" }}>
-              <MenuIcon />
+          {/* Mobile hamburger & Theme Toggle */}
+          <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center", gap: 0.5 }}>
+            <IconButton
+              onClick={toggleTheme}
+              size="small"
+              aria-label="Toggle theme"
+              sx={{
+                width: 34,
+                height: 34,
+                color: isDark ? "#999999" : "#71717a",
+                "&:hover": { color: isDark ? "#ffffff" : "#090909" },
+              }}
+            >
+              {isDark ? <LightModeIcon sx={{ fontSize: 18 }} /> : <DarkModeIcon sx={{ fontSize: 18 }} />}
             </IconButton>
 
+            <IconButton
+              onClick={() => toggleDrawer(true)}
+              size="small"
+              aria-label="Open menu"
+              sx={{
+                width: 34,
+                height: 34,
+                color: isDark ? "#ffffff" : "#090909",
+              }}
+            >
+              <MenuIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+
+            {/* Mobile Drawer */}
             <Drawer
               anchor="right"
               open={open}
@@ -176,12 +241,11 @@ export default function Navbar({ toggleTheme, mode }) {
               slotProps={{
                 paper: {
                   sx: {
-                    width: 260,
+                    width: 280,
                     backdropFilter: "blur(20px)",
-                    backgroundColor:
-                      mode === "dark"
-                        ? "rgba(20, 24, 31, 0.95)"
-                        : "rgba(255,255,255,0.95)",
+                    backgroundColor: isDark ? "rgba(9, 9, 9, 0.96)" : "rgba(255, 255, 255, 0.98)",
+                    borderLeft: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                    p: 2.5,
                   },
                 },
               }}
@@ -189,75 +253,120 @@ export default function Navbar({ toggleTheme, mode }) {
               <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
                 <Box
                   sx={{
-                    p: 2,
+                    py: 1,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Box component="img" src="/assets/pasteboard_logo.png" sx={{ width: 24 }} />
-                    <Typography sx={{ 
-                      fontWeight: 700,
-                      background: (theme) =>
-                        theme.palette.mode === "dark"
-                          ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
-                          : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}>SyncBoard</Typography>
+                    <Box component="img" src="/assets/pasteboard_logo.png" sx={{ width: 20, height: 20 }} />
+                    <Typography
+                      sx={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 600,
+                        fontSize: "15px",
+                        letterSpacing: "-0.03em",
+                        color: isDark ? "#ffffff" : "#090909",
+                      }}
+                    >
+                      SyncBoard
+                    </Typography>
                   </Box>
-                  <IconButton onClick={() => toggleDrawer(false)}>
-                    <CloseRoundedIcon />
+                  <IconButton
+                    onClick={() => toggleDrawer(false)}
+                    size="small"
+                    sx={{ color: isDark ? "#999999" : "#71717a" }}
+                  >
+                    <CloseRoundedIcon sx={{ fontSize: 18 }} />
                   </IconButton>
                 </Box>
 
-                <Divider />
+                <Divider sx={{ my: 2, borderColor: isDark ? "#1a1a1a" : "#e4e4e7" }} />
 
-                <Box sx={{ px: 1, py: 2, flex: 1 }}>
+                <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 0.5 }}>
                   {navItems.map((item) => {
                     const isActive = currentPath === item.path;
                     return (
-                      <MenuItem
+                      <Box
                         key={item.label}
                         component={Link}
                         to={item.path}
                         onClick={() => toggleDrawer(false)}
                         sx={{
-                          mb: 0.5,
                           py: 1.2,
-                          color: isActive ? "primary.main" : "text.primary",
-                          transition: "0.2s",
+                          px: 2,
+                          borderRadius: "8px",
+                          color: isActive
+                            ? (isDark ? "#ffffff" : "#090909")
+                            : (isDark ? "#999999" : "#71717a"),
+                          backgroundColor: isActive
+                            ? (isDark ? "#141414" : "#f4f4f5")
+                            : "transparent",
+                          fontWeight: isActive ? 600 : 500,
+                          fontSize: "14px",
+                          letterSpacing: "-0.14px",
+                          textDecoration: "none",
+                          display: "block",
+                          transition: "all 0.15s ease",
                           "&:hover": {
-                            backgroundColor:
-                              mode === "dark"
-                                ? "rgba(255,255,255,0.08)"
-                                : "rgba(0,0,0,0.05)",
+                            backgroundColor: isDark ? "#141414" : "#f4f4f5",
+                            color: isDark ? "#ffffff" : "#090909",
                           },
                         }}
                       >
                         {item.label}
-                      </MenuItem>
+                      </Box>
                     );
                   })}
                 </Box>
 
-                <Divider />
-                <Box sx={{ p: 2 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    startIcon={mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
-                    onClick={toggleTheme}
-                    sx={{ borderRadius: 999 }}
-                  >
-                    Toggle Theme
-                  </Button>
-                </Box>
+                <Divider sx={{ my: 2, borderColor: isDark ? "#1a1a1a" : "#e4e4e7" }} />
+
+                <Button
+                  component={Link}
+                  to="/explore"
+                  variant="contained"
+                  onClick={() => toggleDrawer(false)}
+                  fullWidth
+                  sx={{
+                    mb: 1.5,
+                    backgroundColor: isDark ? "#ffffff" : "#090909",
+                    color: isDark ? "#000000" : "#ffffff",
+                    borderRadius: "100px",
+                    py: 1,
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    boxShadow: "none",
+                    "&:hover": {
+                      backgroundColor: isDark ? "#ececec" : "#222222",
+                      boxShadow: "none",
+                    },
+                  }}
+                >
+                  Get Started
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  onClick={toggleTheme}
+                  fullWidth
+                  startIcon={isDark ? <LightModeIcon sx={{ fontSize: 16 }} /> : <DarkModeIcon sx={{ fontSize: 16 }} />}
+                  sx={{
+                    borderRadius: "100px",
+                    borderColor: isDark ? "#262626" : "#e4e4e7",
+                    color: isDark ? "#ffffff" : "#090909",
+                    py: 0.9,
+                    fontSize: "13px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {isDark ? "Light Mode" : "Dark Mode"}
+                </Button>
               </Box>
             </Drawer>
           </Box>
-        </StyledToolbar>
+        </Toolbar>
       </Container>
     </AppBar>
   );

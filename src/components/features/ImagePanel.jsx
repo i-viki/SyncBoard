@@ -17,7 +17,6 @@ function ImagePanel({
     fileHandler,
     handleDownloadImage,
     handleDeleteImage,
-    isLockDisabled,
     isBoardInteractionDisabled,
 }) {
     console.log("lock status in image panel:", isBoardInteractionDisabled);

@@ -1,9 +1,12 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Container, Box, Typography, Divider, alpha } from "@mui/material";
+import { Container, Box, Typography, Divider, useTheme } from "@mui/material";
 import PrivacyPolicyContent from "../components/features/PrivacyPolicyContent";
 
 function PrivacyPolicy() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   return (
     <>
       <Helmet>
@@ -14,53 +17,85 @@ function PrivacyPolicy() {
       <Box sx={{ py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
           {/* Header Section */}
-          <Box sx={{ mb: 8, textAlign: "center" }}>
-            <Typography
-              variant="h3"
-              component="h1"
-              gutterBottom
+          <Box sx={{ mb: 7, textAlign: "center" }}>
+            <Box
               sx={{
-                letterSpacing: "-0.04em",
-                background: "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontWeight: 900,
+                display: "inline-flex",
+                alignItems: "center",
+                px: 2,
+                py: 0.5,
+                borderRadius: "100px",
+                backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                mb: 2.5,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#0099ff",
+                }}
+              >
+                Data & Transparency
+              </Typography>
+            </Box>
+
+            <Typography
+              variant="h1"
+              sx={{
+                fontFamily: "var(--font-display)",
+                fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4.25rem" },
+                fontWeight: 500,
+                lineHeight: { xs: 1.05, md: 0.98 },
+                letterSpacing: { xs: "-1.5px", md: "-3px" },
+                color: isDark ? "#ffffff" : "#090909",
+                mb: 2,
               }}
             >
               Privacy Policy
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: "auto", fontWeight: 500 }}>
-              Your privacy is our priority. This policy outlines how we safeguard your data
-              while providing a seamless collaboration experience.
+
+            <Typography sx={{ maxWidth: 580, mx: "auto", fontSize: "16px", color: isDark ? "#999999" : "#71717a", lineHeight: 1.5 }}>
+              Your privacy is fundamental to our architecture. SyncBoard is built without user accounts, persistent profiles, or data harvesting.
             </Typography>
           </Box>
 
           <Box
             sx={{
-              p: { xs: 3, md: 6 },
-              borderRadius: 4,
-              border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.2)}`,
-              backgroundColor: (theme) => alpha(theme.palette.background.paper, 0.6),
-              backdropFilter: "blur(10px)",
+              p: { xs: 3.5, md: 6 },
+              borderRadius: "24px",
+              border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              backgroundColor: isDark ? "#141414" : "#ffffff",
+              boxShadow: isDark
+                ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                : "0 10px 30px rgba(0, 0, 0, 0.05)",
               typography: "body1",
-              lineHeight: 1.8,
-              "& h2": {
+              lineHeight: 1.7,
+              "& h2, & h3": {
                 mt: 4,
-                mb: 2,
-                fontWeight: 700,
-                fontSize: "1.5rem",
-                color: "text.primary"
+                mb: 1.5,
+                fontWeight: 600,
+                fontSize: "1.25rem",
+                letterSpacing: "-0.4px",
+                color: isDark ? "#ffffff" : "#090909",
               },
               "& p": {
-                color: "text.primary",
+                color: isDark ? "#cccccc" : "#52525b",
                 mb: 2,
-                fontSize: "1rem",
-                opacity: 0.9
-              }
+                fontSize: "15px",
+                letterSpacing: "-0.15px",
+              },
+              "& a": {
+                color: "#0099ff",
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" },
+              },
             }}
           >
-            <Divider sx={{ mb: 4, opacity: 0.5 }} />
-
+            <Divider sx={{ mb: 4, borderColor: isDark ? "#1a1a1a" : "#e4e4e7" }} />
             <PrivacyPolicyContent />
           </Box>
         </Container>

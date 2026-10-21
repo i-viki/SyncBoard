@@ -59,8 +59,7 @@ export const getRoomOnce = async (code) => {
 export const updateRoomText = async (
   code,
   value,
-  firebaseData,
-  USER_UUID
+  firebaseData
 ) => {
   const roomRef = getRoomRef(code);
 

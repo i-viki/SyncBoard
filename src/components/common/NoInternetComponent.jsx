@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { pageLogging } from "../../services/analyticsService";
 import {
   Box,
@@ -6,7 +6,9 @@ import {
   Button,
   Paper,
   Stack,
+  useTheme,
 } from "@mui/material";
+import { WifiOff, RefreshCw } from "lucide-react";
 
 /* ================= INTERNET STATUS HOOK ================= */
 
@@ -46,6 +48,8 @@ function useOnlineStatus() {
 
 export default function NoInternetComponent() {
   const isOnline = useOnlineStatus();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   useEffect(() => {
     if (!isOnline) pageLogging("No Internet");
@@ -56,7 +60,7 @@ export default function NoInternetComponent() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "80vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -64,37 +68,80 @@ export default function NoInternetComponent() {
       }}
     >
       <Paper
-        elevation={4}
+        elevation={0}
         sx={{
           p: 5,
-          borderRadius: 3,
-          maxWidth: 420,
+          borderRadius: "24px",
+          maxWidth: 440,
           textAlign: "center",
+          backgroundColor: isDark ? "#141414" : "#ffffff",
+          border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+          boxShadow: isDark
+            ? "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 60px rgba(0, 0, 0, 0.6)"
+            : "0 20px 60px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Stack spacing={3} alignItems="center">
-          {/* Image */}
-          <Typography fontSize={80}>📡</Typography>
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 85, 119, 0.12)",
+              border: "1px solid rgba(255, 85, 119, 0.3)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <WifiOff size={28} color="#ff5577" />
+          </Box>
 
-          {/* Title */}
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Oops! You're Offline
+          <Typography
+            sx={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 600,
+              fontSize: "24px",
+              letterSpacing: "-0.6px",
+              color: isDark ? "#ffffff" : "#090909",
+            }}
+          >
+            Connection Disconnected
           </Typography>
 
-          {/* Description */}
-          <Typography color="text.secondary">
-            You need an internet connection to share data in real time.
-            Please check your connection and try again.
+          <Typography sx={{ color: isDark ? "#999999" : "#71717a", fontSize: "14px", lineHeight: 1.5 }}>
+            Real-time synchronization requires an active internet connection.
+            Please verify your network connection to resume streaming.
           </Typography>
-          <Typography variant="caption">
-            Checking connection every 10 seconds...
+
+          <Typography
+            sx={{
+              fontSize: "11px",
+              fontFamily: "var(--font-mono)",
+              color: isDark ? "#666666" : "#a1a1aa",
+            }}
+          >
+            Checking connection telemetry every 10s...
           </Typography>
-          {/* Retry Button */}
+
           <Button
             variant="contained"
+            size="large"
             onClick={() => window.location.reload()}
+            startIcon={<RefreshCw size={16} />}
+            sx={{
+              borderRadius: "100px",
+              px: 3.5,
+              py: 1.2,
+              fontWeight: 600,
+              backgroundColor: isDark ? "#ffffff" : "#090909",
+              color: isDark ? "#000000" : "#ffffff",
+              "&:hover": {
+                backgroundColor: isDark ? "#ececec" : "#222222",
+              },
+            }}
           >
-            Try Again
+            Retry Connection
           </Button>
         </Stack>
       </Paper>

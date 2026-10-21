@@ -12,9 +12,7 @@ function Home() {
     <>
       <Helmet>
         {/* Primary SEO */}
-        <title>
-          SyncBoard | Real-Time Text & Image Sharing Across Devices
-        </title>
+        <title>SyncBoard | Real-Time Text & Image Sharing</title>
 
         <meta
           name="description"

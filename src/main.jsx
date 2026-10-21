@@ -10,14 +10,11 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 /* ------------------ Helpers ------------------ */
 
-// Get initial theme (localStorage -> system -> fallback)
 const getInitialMode = () => {
   const saved = localStorage.getItem("themeMode");
   if (saved) return saved;
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  // Framer is a dark-first design system
+  return "dark";
 };
 
 /* ------------------ Main Component ------------------ */
@@ -31,19 +28,10 @@ function Main() {
     localStorage.setItem("themeMode", newMode);
   };
 
-  // Sync with system theme ONLY if user has not manually selected one
   React.useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handleChange = (e) => {
-      if (!localStorage.getItem("themeMode")) {
-        setMode(e.matches ? "dark" : "light");
-      }
-    };
-
-    media.addEventListener("change", handleChange);
-    return () => media.removeEventListener("change", handleChange);
-  }, []);
+    document.documentElement.setAttribute("data-theme", mode);
+    document.documentElement.style.colorScheme = mode;
+  }, [mode]);
 
   const theme = React.useMemo(
     () =>
@@ -51,62 +39,177 @@ function Main() {
         palette: {
           mode,
 
-          ...(mode === "dark" && {
-            background: {
-              default: "hsl(210, 14%, 7%)",
-              paper: "hsl(210, 14%, 10%)",
-            },
-            text: {
-              primary: "hsl(210, 25%, 98%)",
-              secondary: "rgb(171, 179, 186)",
-            },
-            divider: "rgba(255, 255, 255, 0.12)",
-          }),
+          ...(mode === "dark"
+            ? {
+                background: {
+                  default: "#090909",
+                  paper: "#141414",
+                },
+                text: {
+                  primary: "#ffffff",
+                  secondary: "#999999",
+                },
+                divider: "#262626",
+                action: {
+                  hover: "rgba(255, 255, 255, 0.05)",
+                  selected: "rgba(255, 255, 255, 0.1)",
+                },
+              }
+            : {
+                background: {
+                  default: "#f4f4f5",
+                  paper: "#ffffff",
+                },
+                text: {
+                  primary: "#090909",
+                  secondary: "#52525b",
+                },
+                divider: "#e4e4e7",
+                action: {
+                  hover: "rgba(0, 0, 0, 0.04)",
+                  selected: "rgba(0, 0, 0, 0.08)",
+                },
+              }),
 
-          ...(mode === "light" && {
-            background: {
-              default: "hsl(210, 40%, 98%)",
-              paper: "hsl(0, 0%, 100%)",
-            },
-            text: {
-              primary: "hsl(210, 35%, 10%)",
-              secondary: "rgb(87, 102, 117)",
-            },
-            divider: "rgba(0, 0, 0, 0.08)",
-          }),
-
-          primary: { main: "#3b82f6" },
-          secondary: { main: "#6366f1" },
+          primary: {
+            main: mode === "dark" ? "#ffffff" : "#090909",
+            contrastText: mode === "dark" ? "#000000" : "#ffffff",
+          },
+          secondary: {
+            main: "#0099ff", // Framer Accent Blue
+          },
         },
 
         typography: {
-          fontFamily: "'Open Sans', sans-serif",
+          fontFamily:
+            "'Inter', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          h1: {
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontWeight: 500,
+            letterSpacing: "-0.045em",
+          },
+          h2: {
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontWeight: 500,
+            letterSpacing: "-0.04em",
+          },
+          h3: {
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontWeight: 500,
+            letterSpacing: "-0.035em",
+          },
+          h4: {
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontWeight: 600,
+            letterSpacing: "-0.03em",
+          },
+          h5: {
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontWeight: 600,
+            letterSpacing: "-0.025em",
+          },
+          h6: {
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontWeight: 600,
+            letterSpacing: "-0.02em",
+          },
+          button: {
+            fontFamily: "'Inter', sans-serif",
+            textTransform: "none",
+            fontWeight: 500,
+            fontSize: "14px",
+            letterSpacing: "-0.14px",
+          },
         },
 
         shape: {
-          borderRadius: 12,
+          borderRadius: 14,
         },
 
         components: {
           MuiCssBaseline: {
             styleOverrides: {
               body: {
-                transition:
-                  "background-color 0.3s ease, color 0.3s ease",
+                backgroundColor: mode === "dark" ? "#090909" : "#f4f4f5",
+                color: mode === "dark" ? "#ffffff" : "#090909",
+                transition: "background-color 0.25s ease, color 0.25s ease",
+              },
+            },
+          },
+          MuiButton: {
+            styleOverrides: {
+              root: {
+                borderRadius: "100px", // Framer signature pill CTA
+                textTransform: "none",
+                fontWeight: 500,
+                fontSize: "14px",
+                letterSpacing: "-0.14px",
+                padding: "10px 18px",
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                "&:active": {
+                  transform: "scale(0.98)",
+                },
+              },
+              containedPrimary: {
+                backgroundColor: mode === "dark" ? "#ffffff" : "#090909",
+                color: mode === "dark" ? "#000000" : "#ffffff",
+                boxShadow: "none",
+                "&:hover": {
+                  backgroundColor: mode === "dark" ? "#ececec" : "#1a1a1a",
+                  boxShadow: "0 0 25px rgba(255, 255, 255, 0.15)",
+                },
+              },
+              outlined: {
+                borderColor: mode === "dark" ? "#262626" : "#e4e4e7",
+                backgroundColor: mode === "dark" ? "#141414" : "#ffffff",
+                color: mode === "dark" ? "#ffffff" : "#090909",
+                "&:hover": {
+                  borderColor: mode === "dark" ? "#383838" : "#d4d4d8",
+                  backgroundColor: mode === "dark" ? "#1c1c1c" : "#f4f4f5",
+                },
               },
             },
           },
           MuiPaper: {
             styleOverrides: {
               root: {
-                transition: "background-color 0.3s ease",
+                backgroundImage: "none",
+                backgroundColor: mode === "dark" ? "#141414" : "#ffffff",
+                borderColor: mode === "dark" ? "#262626" : "#e4e4e7",
+                boxShadow:
+                  mode === "dark"
+                    ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                    : "0 4px 20px rgba(0, 0, 0, 0.05)",
               },
             },
           },
-          MuiAppBar: {
+          MuiOutlinedInput: {
             styleOverrides: {
               root: {
-                transition: "background-color 0.3s ease",
+                borderRadius: 10,
+                backgroundColor: mode === "dark" ? "#141414" : "#ffffff",
+                "& fieldset": {
+                  borderColor: mode === "dark" ? "#262626" : "#e4e4e7",
+                  transition: "border-color 0.2s ease",
+                },
+                "&:hover fieldset": {
+                  borderColor: mode === "dark" ? "#3a3a3a" : "#a1a1aa",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#0099ff",
+                  boxShadow: "0 0 0 3px rgba(0, 153, 255, 0.2)",
+                  borderWidth: "1.5px",
+                },
+              },
+            },
+          },
+          MuiChip: {
+            styleOverrides: {
+              root: {
+                borderRadius: "100px",
+                fontWeight: 500,
+                fontSize: "13px",
+                letterSpacing: "-0.13px",
               },
             },
           },
@@ -129,8 +232,5 @@ function Main() {
 
 /* ------------------ Render ------------------ */
 
-const root = ReactDOM.createRoot(
-  document.getElementById("sync-board")
-);
-
+const root = ReactDOM.createRoot(document.getElementById("sync-board"));
 root.render(<Main />);

@@ -5,24 +5,23 @@ import {
   Box,
   Typography,
   IconButton,
-  Chip,
   Container,
   Button,
   Drawer,
   Divider,
-  Stack,
+  Tooltip,
 } from "@mui/material";
-import { 
-  QrCode2 as QrCode2Icon, 
-  People as PeopleIcon, 
+import {
+  QrCode2 as QrCode2Icon,
+  People as PeopleIcon,
   Share as ShareIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
+  DarkModeOutlined as DarkModeIcon,
+  LightModeOutlined as LightModeIcon,
   Menu as MenuIcon,
-  CloseRounded as CloseRoundedIcon
+  CloseRounded as CloseRoundedIcon,
+  ContentCopy as ContentCopyIcon,
 } from "@mui/icons-material";
-import { styled } from "@mui/material/styles";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { appDatabase } from "../../config/firebase";
 import { ref, onDisconnect, onValue } from "firebase/database";
 import { clickLogging } from "../../services/analyticsService";
@@ -30,36 +29,13 @@ import { toast } from "sonner";
 import QRCodeModal from "./QRCodeModal";
 import SelfDestructTimer from "../features/SelfDestructTimer";
 import { trackPresence, listenToPresence, getRoomRef } from "../../services/firebaseService";
-import { userIdentifier, sessionIdentifier } from "../../utils/userIdentifier";
+import { sessionIdentifier } from "../../utils/userIdentifier";
 import { ensureAnonymousAuth } from "../../services/authService";
 
-const GlassToolbar = styled(Toolbar)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  borderRadius: theme.shape.borderRadius * 2,
-
-  backdropFilter: "blur(18px)",
-  WebkitBackdropFilter: "blur(18px)",
-
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(20, 24, 31, 0.65)"
-      : "rgba(255, 255, 255, 0.7)",
-
-  border: `1px solid ${theme.palette.divider}`,
-  boxShadow: theme.shadows[3],
-  padding: "8px 16px",
-}));
-
-export default function ClipNavbar({ internetStatus,
-  toggleTheme,
-  mode, }) {
+export default function ClipNavbar({ internetStatus, toggleTheme, mode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const toggleDrawer = (open) => () => setMobileOpen(open);
 
-  const toggleDrawer = (open) => () => {
-    setMobileOpen(open);
-  };
   const navigate = useNavigate();
   const { code } = useParams();
   const [status, setStatus] = useState("Connecting...");
@@ -68,8 +44,8 @@ export default function ClipNavbar({ internetStatus,
   const [qrOpen, setQrOpen] = useState(false);
   const [activeUsers, setActiveUsers] = useState(0);
   const [roomData, setRoomData] = useState({});
-  const USER_UUID = userIdentifier();
   const SESSION_ID = sessionIdentifier();
+  const isDark = mode === "dark";
 
   // Validate room code
   useEffect(() => {
@@ -127,224 +103,51 @@ export default function ClipNavbar({ internetStatus,
   const handleCopyCode = () => {
     const url = `https://isyncboard.vercel.app/${code}`;
     navigator.clipboard.writeText(url);
-    toast.success("Board URL copied to clipboard", { duration: 2500 });
+    toast.success("Board link copied to clipboard", { duration: 2500 });
     clickLogging("Board URL Shared: " + code);
   };
+
+  const isConnected = internetStatus && status === "Connected";
 
   return (
     <AppBar
       position="sticky"
       elevation={0}
       sx={{
-        bgcolor: "transparent",
+        top: 0,
+        zIndex: 1100,
+        backgroundColor: isDark ? "rgba(9, 9, 9, 0.85)" : "rgba(250, 250, 250, 0.85)",
+        backdropFilter: "blur(16px) saturate(180%)",
+        WebkitBackdropFilter: "blur(16px) saturate(180%)",
+        borderBottom: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
         boxShadow: "none",
-        mt: 2,
+        transition: "background-color 0.2s ease, border-color 0.2s ease",
       }}
     >
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={toggleDrawer(false)}
-        slotProps={{
-          paper: {
-            sx: {
-              width: 280,
-              backdropFilter: "blur(25px)",
-              WebkitBackdropFilter: "blur(25px)",
-              backgroundColor:
-                mode === "dark"
-                  ? "rgba(10, 12, 16, 0.92)"
-                  : "rgba(255, 255, 255, 0.95)",
-              borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-              boxShadow: "-10px 0 30px rgba(0,0,0,0.1)",
-            },
-          },
-        }}
-      >
-        <Box
+      <Container maxWidth="xl">
+        <Toolbar
+          disableGutters
           sx={{
-            height: "100%",
+            height: 56,
+            minHeight: "56px !important",
             display: "flex",
-            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          {/* Header with Glow */}
-          <Box
-            sx={{
-              p: 3,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "relative",
-              overflow: "hidden",
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "2px",
-                background: "linear-gradient(90deg, transparent, #3b82f6, transparent)",
-                opacity: 0.5
-              }
-            }}
-          >
-            <Box 
-              onClick={() => {
-                navigate("/");
-                setMobileOpen(false);
-              }}
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: 1.5, 
-                textDecoration: "none", 
-                color: "inherit",
-                cursor: "pointer"
-              }}
-            >
-              <Box
-                component="img"
-                src="/assets/pasteboard_logo.png"
-                sx={{ width: 28, height: 28 }}
-              />
-              <Typography variant="h6" sx={{ 
-                fontWeight: 800, 
-                letterSpacing: -0.5,
-                background: (theme) =>
-                  theme.palette.mode === "dark"
-                    ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
-                    : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-                SyncBoard
-              </Typography>
-            </Box>
-
-            <IconButton 
-                onClick={toggleDrawer(false)}
-                sx={{ 
-                    backgroundColor: mode === "dark" ? "rgba(59, 130, 246, 0.1)" : "rgba(59, 130, 246, 0.05)",
-                    color: "primary.main"
-                }}
-            >
-              <CloseRoundedIcon size="small" />
-            </IconButton>
-          </Box>
-
-          <Divider />
-
-          {/* Content Sections */}
-          <Box sx={{ px: 2, py: 3, flex: 1 }}>
-            {/* Board Code Well */}
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.5, mb: 1.5, display: "block", opacity: 0.9 }}>
-                Active Board
-                </Typography>
-
-                <Box
-                sx={{
-                    px: 2,
-                    py: 2,
-                    borderRadius: 3,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    backgroundColor: mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
-                    border: (theme) => `1px solid ${theme.palette.divider}`,
-                }}
-                >
-                <Box>
-                    <Typography variant="h5" sx={{ color: "primary.main", letterSpacing: 2, fontWeight: 800 }}>
-                        {code}
-                    </Typography>
-                    <Typography variant="caption" sx={{ opacity: 0.6 }}>
-                        Sharing Code
-                    </Typography>
-                </Box>
-
-                <IconButton
-                    onClick={() => {
-                    handleCopyCode();
-                    setMobileOpen(false);
-                    }}
-                    sx={{ backgroundColor: "primary.main", color: "white", "&:hover": { backgroundColor: "primary.dark" } }}
-                >
-                    <ShareIcon fontSize="small" />
-                </IconButton>
-                </Box>
-            </Box>
-
-            {/* Status & Security Well */}
+          {/* Left Brand & Workspace Telemetry */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Box
-                sx={{
-                    p: 2.5,
-                    borderRadius: 3,
-                    backgroundColor: mode === "dark" ? "rgba(59, 130, 246, 0.05)" : "rgba(59, 130, 246, 0.02)",
-                    border: (theme) => `1px solid ${mode === "dark" ? "rgba(59, 130, 246, 0.2)" : "rgba(59, 130, 246, 0.1)"}`,
-                }}
-            >
-                <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.5, mb: 2, display: "block", opacity: 0.9 }}>
-                    Network & Security
-                </Typography>
-
-                <Stack spacing={3}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>Status</Typography>
-                        <Chip
-                            label={!internetStatus ? "Offline" : status}
-                            color={!internetStatus ? "error" : status === "Connected" ? "success" : "warning"}
-                            size="small"
-                            sx={{ fontWeight: 700, borderRadius: 1 }}
-                        />
-                    </Box>
-
-                    <Box>
-                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>Self-Destruct</Typography>
-                        <SelfDestructTimer
-                            code={code}
-                            expirationTime={roomData?.expirationTime}
-                        />
-                    </Box>
-                </Stack>
-            </Box>
-          </Box>
-
-          <Divider />
-
-          {/* Bottom Section */}
-          <Box sx={{ p: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={
-                mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />
-              }
-              onClick={() => {
-                toggleTheme();
-                setMobileOpen(false);
-              }}
-              sx={{ borderRadius: 999 }}
-            >
-              Toggle Theme
-            </Button>
-          </Box>
-        </Box>
-      </Drawer>
-      <Container maxWidth="lg">
-        <GlassToolbar disableGutters>
-          {/* Left Side */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Box
-              onClick={() => navigate("/")}
+              component={Link}
+              to="/"
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: 1.25,
                 textDecoration: "none",
-                color: "inherit",
-                cursor: "pointer"
+                color: isDark ? "#ffffff" : "#090909",
+                transition: "opacity 0.15s ease",
+                "&:hover": { opacity: 0.8 },
               }}
             >
               <Box
@@ -352,116 +155,434 @@ export default function ClipNavbar({ internetStatus,
                 src="/assets/pasteboard_logo.png"
                 alt="SyncBoard Logo"
                 sx={{
-                  width: 28,
-                  height: 28,
+                  width: 22,
+                  height: 22,
                   objectFit: "contain",
                 }}
               />
-
               <Typography
-                variant="h6"
                 sx={{
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  background: (theme) =>
-                    theme.palette.mode === "dark"
-                      ? "linear-gradient(135deg, #fff 0%, #94a3b8 100%)"
-                      : "linear-gradient(135deg, #0f172a 0%, #475569 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  letterSpacing: "-0.035em",
+                  color: isDark ? "#ffffff" : "#090909",
                 }}
               >
                 SyncBoard
               </Typography>
             </Box>
 
-            <Chip variant="outlined"
-              label={!internetStatus ? "Offline" : status}
-              color={
-                !internetStatus
-                  ? "error"
-                  : status === "Connected"
-                    ? "success"
-                    : "warning"
-              }
-              size="small"
+            {/* Subtle vertical hairline separator */}
+            <Box
+              sx={{
+                width: "1px",
+                height: 16,
+                backgroundColor: isDark ? "#262626" : "#e4e4e7",
+                mx: 0.5,
+              }}
             />
 
-            <Chip
-              icon={<PeopleIcon sx={{ fontSize: "14px !important" }} />}
-              label={
-                <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
-                    {activeUsers}
-                    <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.5 }}>
-                        active
-                    </Box>
-                </Box>
-              }
-              size="small"
-              variant="outlined"
-              sx={{ fontWeight: 600 }}
-            />
+            {/* Connection Indicator */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.8,
+                px: 1,
+                py: 0.25,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  backgroundColor: isConnected ? "#22c55e" : "#ff5577",
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  color: isDark ? "#999999" : "#71717a",
+                  letterSpacing: "-0.12px",
+                }}
+              >
+                {!internetStatus ? "Offline" : status}
+              </Typography>
+            </Box>
 
+            {/* Active Users Pill */}
+            <Box
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                alignItems: "center",
+                gap: 0.6,
+                px: 1,
+                py: 0.25,
+              }}
+            >
+              <PeopleIcon sx={{ fontSize: 14, color: isDark ? "#999999" : "#71717a" }} />
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  color: isDark ? "#ffffff" : "#090909",
+                  letterSpacing: "-0.12px",
+                }}
+              >
+                {activeUsers}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  color: isDark ? "#999999" : "#71717a",
+                }}
+              >
+                active
+              </Typography>
+            </Box>
+
+            {/* Self-Destruct Timer on desktop */}
             <Box sx={{ display: { xs: "none", md: "block" } }}>
-                <SelfDestructTimer
-                code={code}
-                expirationTime={roomData?.expirationTime}
-                />
+              <SelfDestructTimer code={code} expirationTime={roomData?.expirationTime} />
             </Box>
           </Box>
 
-          {/* Right Side – Pill */}
+          {/* Right Action Bar */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 1.5 }}>
+            {/* Clickable Board Code Badge */}
+            <Tooltip title="Click to copy board link">
+              <Box
+                onClick={handleCopyCode}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.8,
+                  px: 1.5,
+                  py: 0.45,
+                  borderRadius: "6px",
+                  backgroundColor: isDark ? "#141414" : "#f4f4f5",
+                  border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                  cursor: "pointer",
+                  transition: "background-color 0.15s ease, border-color 0.15s ease",
+                  "&:hover": {
+                    borderColor: isDark ? "#383838" : "#d4d4d8",
+                    backgroundColor: isDark ? "#1c1c1c" : "#eaeaea",
+                  },
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "var(--font-mono)",
+                    fontWeight: 600,
+                    fontSize: "13px",
+                    letterSpacing: "0.5px",
+                    color: isDark ? "#ffffff" : "#090909",
+                  }}
+                >
+                  {code}
+                </Typography>
+                <ContentCopyIcon sx={{ fontSize: 13, color: isDark ? "#999999" : "#71717a" }} />
+              </Box>
+            </Tooltip>
+
+            {/* Share CTA */}
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleCopyCode}
+              startIcon={<ShareIcon sx={{ fontSize: 14 }} />}
+              sx={{
+                borderRadius: "100px",
+                px: 2,
+                py: 0.65,
+                fontSize: "13px",
+                fontWeight: 600,
+                letterSpacing: "-0.13px",
+                backgroundColor: isDark ? "#ffffff" : "#090909",
+                color: isDark ? "#000000" : "#ffffff",
+                boxShadow: "none",
+                transition: "background-color 0.15s ease, transform 0.1s ease",
+                "&:hover": {
+                  backgroundColor: isDark ? "#ececec" : "#222222",
+                  boxShadow: "none",
+                },
+                "&:active": {
+                  transform: "scale(0.98)",
+                },
+              }}
+            >
+              Share Board
+            </Button>
+
+            {/* QR Code circular button */}
+            <Tooltip title="QR Code for mobile join">
+              <IconButton
+                onClick={() => setQrOpen(true)}
+                size="small"
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  color: isDark ? "#999999" : "#71717a",
+                  transition: "color 0.15s ease, background-color 0.15s ease",
+                  "&:hover": {
+                    color: isDark ? "#ffffff" : "#090909",
+                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+                  },
+                }}
+              >
+                <QrCode2Icon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+
+            {/* Theme Toggle circular button */}
+            <Tooltip title={isDark ? "Switch to light mode" : "Switch to dark mode"}>
+              <IconButton
+                onClick={toggleTheme}
+                size="small"
+                aria-label="Toggle theme"
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  color: isDark ? "#999999" : "#71717a",
+                  transition: "color 0.15s ease, background-color 0.15s ease",
+                  "&:hover": {
+                    color: isDark ? "#ffffff" : "#090909",
+                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+                  },
+                }}
+              >
+                {isDark ? <LightModeIcon sx={{ fontSize: 18 }} /> : <DarkModeIcon sx={{ fontSize: 18 }} />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          {/* Mobile hamburger */}
+          <IconButton
+            sx={{
+              display: { xs: "flex", md: "none" },
+              width: 34,
+              height: 34,
+              color: isDark ? "#ffffff" : "#090909",
+            }}
+            onClick={toggleDrawer(true)}
+            size="small"
+          >
+            <MenuIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Toolbar>
+      </Container>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileOpen}
+        onClose={toggleDrawer(false)}
+        slotProps={{
+          paper: {
+            sx: {
+              width: 290,
+              backdropFilter: "blur(20px)",
+              backgroundColor: isDark ? "rgba(9, 9, 9, 0.96)" : "rgba(255, 255, 255, 0.98)",
+              borderLeft: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              p: 2.5,
+            },
+          },
+        }}
+      >
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+          {/* Header */}
           <Box
             sx={{
-              display: { xs: "none", md: "flex" },
+              py: 1,
+              display: "flex",
               alignItems: "center",
-              gap: 1,
-              px: 2,
-              py: 0.5,
-              borderRadius: "999px",
-              backdropFilter: "blur(12px)",
-              backgroundColor:
-                (theme) =>
-                  theme.palette.mode === "dark"
-                    ? "rgba(30,30,30,0.5)"
-                    : "rgba(255,255,255,0.6)",
-              border: (theme) => `1px solid ${theme.palette.divider}`,
+              justifyContent: "space-between",
             }}
           >
-            <Typography variant="body2" sx={{ fontWeight: 600, color: "primary.main" }}>
-              {code}
-            </Typography>
+            <Box
+              onClick={() => {
+                navigate("/");
+                setMobileOpen(false);
+              }}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.2,
+                cursor: "pointer",
+              }}
+            >
+              <Box
+                component="img"
+                src="/assets/pasteboard_logo.png"
+                alt="SyncBoard Logo"
+                sx={{ width: 20, height: 20 }}
+              />
+              <Typography
+                sx={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  letterSpacing: "-0.03em",
+                  color: isDark ? "#ffffff" : "#090909",
+                }}
+              >
+                SyncBoard
+              </Typography>
+            </Box>
 
-            <IconButton onClick={handleCopyCode} size="small">
-              <ShareIcon fontSize="small" />
-            </IconButton>
-
-            <IconButton onClick={() => setQrOpen(true)} size="small">
-              <QrCode2Icon fontSize="small" />
-            </IconButton>
-
-            <IconButton onClick={toggleTheme} size="small">
-              {mode === "dark" ? (
-                <DarkModeIcon fontSize="small" />
-              ) : (
-                <LightModeIcon fontSize="small" />
-              )}
+            <IconButton onClick={toggleDrawer(false)} size="small" sx={{ color: isDark ? "#999999" : "#71717a" }}>
+              <CloseRoundedIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Box>
 
-          {/* Mobile Hamburger */}
-          <IconButton
-            sx={{ display: { xs: "flex", md: "none" } }}
-            onClick={toggleDrawer(true)}
+          <Divider sx={{ my: 2, borderColor: isDark ? "#1a1a1a" : "#e4e4e7" }} />
+
+          {/* Active Board Card */}
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: "14px",
+              backgroundColor: isDark ? "#141414" : "#f4f4f5",
+              border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              mb: 2,
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-        </GlassToolbar>
-      </Container>
-      
-      <QRCodeModal 
-        open={qrOpen} 
-        onClose={() => setQrOpen(false)} 
+            <Typography
+              sx={{
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: isDark ? "#999999" : "#71717a",
+                mb: 1,
+              }}
+            >
+              Board Code
+            </Typography>
+
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Typography
+                sx={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  letterSpacing: "1.5px",
+                  color: isDark ? "#ffffff" : "#090909",
+                }}
+              >
+                {code}
+              </Typography>
+
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => {
+                  handleCopyCode();
+                  setMobileOpen(false);
+                }}
+                startIcon={<ShareIcon sx={{ fontSize: 14 }} />}
+                sx={{
+                  px: 1.8,
+                  py: 0.5,
+                  borderRadius: "100px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  backgroundColor: isDark ? "#ffffff" : "#090909",
+                  color: isDark ? "#000000" : "#ffffff",
+                  boxShadow: "none",
+                  "&:hover": {
+                    backgroundColor: isDark ? "#ececec" : "#222222",
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                Share
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Session Telemetry */}
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: "14px",
+              backgroundColor: isDark ? "#141414" : "#f4f4f5",
+              border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              display: "flex",
+              flexDirection: "column",
+              gap: 1.5,
+            }}
+          >
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "13px", color: isDark ? "#999999" : "#71717a", fontWeight: 500 }}>
+                Status
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    backgroundColor: isConnected ? "#22c55e" : "#ff5577",
+                  }}
+                />
+                <Typography sx={{ fontSize: "13px", fontWeight: 600, color: isDark ? "#ffffff" : "#090909" }}>
+                  {!internetStatus ? "Offline" : status}
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "13px", color: isDark ? "#999999" : "#71717a", fontWeight: 500 }}>
+                Active Peers
+              </Typography>
+              <Typography sx={{ fontSize: "13px", fontWeight: 600, color: isDark ? "#ffffff" : "#090909" }}>
+                {activeUsers} online
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "13px", color: isDark ? "#999999" : "#71717a", fontWeight: 500 }}>
+                Self-Destruct
+              </Typography>
+              <SelfDestructTimer code={code} expirationTime={roomData?.expirationTime} />
+            </Box>
+          </Box>
+
+          <Box sx={{ flex: 1 }} />
+
+          <Divider sx={{ my: 2, borderColor: isDark ? "#1a1a1a" : "#e4e4e7" }} />
+
+          <Button
+            fullWidth
+            variant="outlined"
+            startIcon={isDark ? <LightModeIcon sx={{ fontSize: 16 }} /> : <DarkModeIcon sx={{ fontSize: 16 }} />}
+            onClick={() => {
+              toggleTheme();
+              setMobileOpen(false);
+            }}
+            sx={{
+              borderRadius: "100px",
+              py: 0.9,
+              borderColor: isDark ? "#262626" : "#e4e4e7",
+              color: isDark ? "#ffffff" : "#090909",
+              fontSize: "13px",
+              fontWeight: 500,
+            }}
+          >
+            {isDark ? "Light Mode" : "Dark Mode"}
+          </Button>
+        </Box>
+      </Drawer>
+
+      <QRCodeModal
+        open={qrOpen}
+        onClose={() => setQrOpen(false)}
         url={`https://isyncboard.vercel.app/${code}`}
         code={code}
       />

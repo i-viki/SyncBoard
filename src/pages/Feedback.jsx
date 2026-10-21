@@ -2,9 +2,12 @@ import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import FeedbackForm from "../components/features/FeedbackForm";
 import { pageLogging } from "../services/analyticsService";
-import { Container, Box, Typography, alpha } from "@mui/material";
+import { Container, Box, Typography, useTheme } from "@mui/material";
 
 export default function Feedback() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   useEffect(() => {
     const today = new Date();
     const getData = JSON.parse(localStorage.getItem("feedback")) || {};
@@ -24,62 +27,77 @@ export default function Feedback() {
   return (
     <>
       <Helmet>
-        <title>Share Your Feedback | SyncBoard</title>
-        <meta name="description" content="Help improve SyncBoard by sharing your feedback and suggestions." />
+        <title>Feedback & Community | SyncBoard</title>
+        <meta
+          name="description"
+          content="Help shape the future of SyncBoard by sharing your thoughts, bug reports, and feature requests."
+        />
       </Helmet>
 
-      <Box 
-        sx={{ 
-          py: { xs: 8, md: 15 },
-          background: (theme) => 
-            theme.palette.mode === "dark" 
-              ? "radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)"
-              : "radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.01) 0%, transparent 60%)"
-        }}
-      >
+      <Box sx={{ py: { xs: 8, md: 12 } }}>
         <Container maxWidth="md">
-          <Box sx={{ textAlign: "center", mb: 8 }}>
-            <Typography 
-              component="h1" 
-              variant="h2" 
-              gutterBottom
+          <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
+            <Box
               sx={{
-                letterSpacing: "-0.05em",
-                color: "text.primary", // Solid color
-                fontWeight: 900,
+                display: "inline-flex",
+                alignItems: "center",
+                px: 2,
+                py: 0.5,
+                borderRadius: "100px",
+                backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.04)",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                mb: 2.5,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#0099ff",
+                }}
+              >
+                Feedback Loop
+              </Typography>
+            </Box>
+
+            <Typography
+              component="h1"
+              sx={{
+                fontFamily: "var(--font-display)",
+                fontSize: { xs: "2.5rem", sm: "3.75rem", md: "4.5rem" },
+                fontWeight: 500,
+                lineHeight: { xs: 1.05, md: 0.98 },
+                letterSpacing: { xs: "-1.5px", md: "-3.5px" },
+                color: isDark ? "#ffffff" : "#090909",
+                mb: 2,
               }}
             >
               Building With You
             </Typography>
 
             <Typography
-              variant="h6"
-              color="text.secondary"
-              sx={{ maxWidth: 600, mx: "auto", fontWeight: 500, lineHeight: 1.6 }}
+              sx={{
+                maxWidth: 580,
+                mx: "auto",
+                fontSize: { xs: "15px", md: "17px" },
+                color: isDark ? "#999999" : "#71717a",
+                fontWeight: 400,
+                lineHeight: 1.5,
+                letterSpacing: "-0.17px",
+              }}
             >
-              Every feature and polish starts with real feedback. 
-              Tell us how SyncBoard feels, and where we should go next.
+              Every new feature starts with developer feedback.
+              Tell us how SyncBoard feels in your daily workflow.
             </Typography>
           </Box>
 
-          <Box
-            sx={{
-              p: { xs: 3, md: 6 },
-              borderRadius: 6,
-              border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              backgroundColor: (theme) => alpha(theme.palette.background.paper, 0.5),
-              backdropFilter: "blur(20px)",
-              boxShadow: (theme) => `0 32px 64px -12px ${alpha(theme.palette.common.black, 0.15)}`,
-              position: "relative",
-              zIndex: 1
-            }}
-          >
-            <FeedbackForm />
-          </Box>
+          <FeedbackForm />
 
-          <Box sx={{ textAlign: "center", mt: 8 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ opacity: 0.6, fontWeight: 500 }}>
-              We carefully review every submission to shape the future of SyncBoard.
+          <Box sx={{ textAlign: "center", mt: 6 }}>
+            <Typography sx={{ fontSize: "12px", color: isDark ? "#666666" : "#a1a1aa", letterSpacing: "-0.12px" }}>
+              Responses are stored anonymously and reviewed weekly.
             </Typography>
           </Box>
         </Container>
