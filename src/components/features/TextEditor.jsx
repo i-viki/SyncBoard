@@ -86,9 +86,8 @@ function TextEditor({
     const { code } = useParams();
     const preRef = useRef(null);
 
-    // Internal state for immediate UI feedback (Debounced Firebase sync)
+    // Internal state for immediate UI feedback
     const [localValue, setLocalValue] = useState(value);
-    const debounceTimer = useRef(null);
     const detectedLanguage = useLanguageDetection(localValue, language);
 
     const activeLanguage = language === "auto" ? detectedLanguage : language;
@@ -100,17 +99,7 @@ function TextEditor({
 
     const handleTextChange = (newVal) => {
         setLocalValue(newVal);
-
-        if (debounceTimer.current) {
-            clearTimeout(debounceTimer.current);
-        }
-
-        const delay = newVal === "" ? 200 : 500;
-
-        debounceTimer.current = setTimeout(() => {
-            onValueChange(newVal);
-            debounceTimer.current = null;
-        }, delay);
+        onValueChange(newVal);
     };
 
     const handleDownload = () => {

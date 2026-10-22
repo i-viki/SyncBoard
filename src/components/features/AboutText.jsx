@@ -89,20 +89,45 @@ function AboutText() {
       {/* VALUE PROPS */}
       <Grid container spacing={3} sx={{ mb: { xs: 10, md: 14 } }}>
         <Grid size={{ xs: 12, md: 6 }}>
-          {/* Spotlight Card (Violet) */}
+          {/* Spotlight Card (SaaS Ambient Blue) */}
           <Box
             sx={{
               height: "100%",
               p: { xs: 4, md: 5 },
-              borderRadius: "30px", // Framer rounded.xxl
-              background: "linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)",
-              color: "#ffffff",
-              boxShadow: "0 24px 60px -15px rgba(106, 76, 245, 0.4)",
+              borderRadius: "24px",
+              backgroundColor: isDark ? "#141414" : "#ffffff",
+              background: isDark
+                ? "radial-gradient(420px circle at 50% 0%, rgba(0, 153, 255, 0.12), transparent 70%), #141414"
+                : "radial-gradient(420px circle at 50% 0%, rgba(0, 153, 255, 0.05), transparent 70%), #ffffff",
+              border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+              boxShadow: isDark
+                ? "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 36px -12px rgba(0, 0, 0, 0.5)"
+                : "0 10px 30px rgba(0, 0, 0, 0.05)",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-              "&:hover": { transform: "translateY(-4px)" },
+              position: "relative",
+              overflow: "hidden",
+              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: "20%",
+                right: "20%",
+                height: "1px",
+                background: isDark
+                  ? "linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.4), transparent)"
+                  : "linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.3), transparent)",
+                pointerEvents: "none",
+              },
+              "&:hover": {
+                borderColor: isDark ? "#383838" : "#d4d4d8",
+                transform: "translateY(-4px)",
+                boxShadow: isDark
+                  ? "0 20px 40px -15px rgba(0, 153, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                  : "0 20px 40px -15px rgba(0, 153, 255, 0.12)",
+              },
             }}
           >
             <Box>
@@ -111,14 +136,15 @@ function AboutText() {
                   width: 44,
                   height: 44,
                   borderRadius: "50%",
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  backgroundColor: isDark ? "rgba(0, 153, 255, 0.12)" : "rgba(0, 153, 255, 0.08)",
+                  border: `1px solid ${isDark ? "rgba(0, 153, 255, 0.25)" : "rgba(0, 153, 255, 0.2)"}`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   mb: 3,
                 }}
               >
-                <BoltIcon sx={{ color: "#ffffff", fontSize: 24 }} />
+                <BoltIcon sx={{ color: "#0099ff", fontSize: 24 }} />
               </Box>
 
               <Typography
@@ -129,6 +155,7 @@ function AboutText() {
                   letterSpacing: "-0.8px",
                   lineHeight: 1.15,
                   mb: 1.5,
+                  color: isDark ? "#ffffff" : "#090909",
                 }}
               >
                 Built for High Speed
@@ -138,7 +165,7 @@ function AboutText() {
                 sx={{
                   fontSize: "15px",
                   lineHeight: 1.6,
-                  color: "rgba(255, 255, 255, 0.9)",
+                  color: isDark ? "#999999" : "#71717a",
                   letterSpacing: "-0.15px",
                 }}
               >
@@ -154,9 +181,13 @@ function AboutText() {
                 fontWeight: 600,
                 letterSpacing: "0.06em",
                 textTransform: "uppercase",
-                color: "rgba(255, 255, 255, 0.7)",
+                color: "#0099ff",
+                display: "flex",
+                alignItems: "center",
+                gap: 0.75,
               }}
             >
+              <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#0099ff" }} />
               Realtime WebSocket Broadcast
             </Typography>
           </Box>

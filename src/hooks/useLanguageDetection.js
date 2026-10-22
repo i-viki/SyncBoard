@@ -291,24 +291,28 @@ export const useLanguageDetection = (value, mode) => {
             return;
         }
 
-        const half = 4000;
-        const sample =
-            value.length > half * 2
-                ? value.slice(0, half) + "\n" + value.slice(Math.floor(value.length / 2), Math.floor(value.length / 2) + half)
-                : value;
+        const timer = setTimeout(() => {
+            const half = 4000;
+            const sample =
+                value.length > half * 2
+                    ? value.slice(0, half) + "\n" + value.slice(Math.floor(value.length / 2), Math.floor(value.length / 2) + half)
+                    : value;
 
-        const scores = computeScores(sample);
+            const scores = computeScores(sample);
 
-        let bestLang = "plain";
-        let maxScore = 0;
-        for (const [lang, score] of Object.entries(scores)) {
-            if (score > maxScore) {
-                maxScore = score;
-                bestLang = lang;
+            let bestLang = "plain";
+            let maxScore = 0;
+            for (const [lang, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestLang = lang;
+                }
             }
-        }
 
-        setDetectedLanguage(maxScore >= 6 ? bestLang : "plain");
+            setDetectedLanguage(maxScore >= 6 ? bestLang : "plain");
+        }, 350);
+
+        return () => clearTimeout(timer);
     }, [value, mode]);
 
     return detectedLanguage;

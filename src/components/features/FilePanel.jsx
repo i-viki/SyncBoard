@@ -5,8 +5,8 @@ import {
     Typography,
     Stack,
     IconButton,
+    CircularProgress,
 } from "@mui/material";
-import { TailSpin } from "react-loader-spinner";
 import {
     FileUp,
     FileText,
@@ -40,6 +40,11 @@ const isImageFile = (file) => {
     if (file.fileType && file.fileType.startsWith("image/")) return true;
     const ext = file.name?.split(".").pop()?.toLowerCase();
     return ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico"].includes(ext);
+};
+
+const getThumbnailSrc = (src) => {
+    if (!src || !src.includes("cloudinary.com")) return src;
+    return src.replace("/upload/", "/upload/c_thumb,w_96,h_96,q_auto,f_auto/");
 };
 
 function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardInteractionDisabled }) {
@@ -81,8 +86,10 @@ function FileItem({ file, theme, handleDownloadFile, handleDeleteFile, isBoardIn
             >
                 {isImage && file.src ? (
                     <img
-                        src={file.src}
+                        src={getThumbnailSrc(file.src)}
                         alt={file.name}
+                        loading="lazy"
+                        decoding="async"
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
                 ) : (
@@ -235,7 +242,7 @@ function FilePanel({
 
                 {loader ? (
                     <Box sx={{ py: 1.5, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-                        <TailSpin height="28" width="28" color="#0099ff" />
+                        <CircularProgress size={28} sx={{ color: "#0099ff" }} />
                         <Typography variant="caption" sx={{ color: "#999999", fontWeight: 500 }}>
                             Syncing asset...
                         </Typography>
@@ -327,7 +334,7 @@ function FilePanel({
                 ) : (
                     files.map((file, index) => (
                         <FileItem
-                            key={index}
+                            key={file.src || file.name || index}
                             file={file}
                             theme={theme}
                             handleDownloadFile={handleDownloadFile}

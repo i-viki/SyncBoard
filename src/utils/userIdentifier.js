@@ -1,5 +1,4 @@
 const UUID_KEY = "user_uuid";
-const META_KEY = "user_meta";
 
 function generateUUID() {
   if (crypto.randomUUID) {
@@ -36,57 +35,12 @@ export function sessionIdentifier() {
 }
 
 export async function userMetadata() {
-  let meta = localStorage.getItem(META_KEY);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  const languages = navigator.languages ? navigator.languages.join(", ") : navigator.language || "Unknown";
 
-  if (meta) {
-    meta = JSON.parse(meta);
-    
-    // If it's the old version (missing new fields like IP), don't return it
-    if (meta.city && meta.ip) {
-        meta.lastChecked = Date.now();
-        localStorage.setItem(META_KEY, JSON.stringify(meta));
-        return meta;
-    }
-  }
-
-  try {
-    const response = await fetch("https://ipapi.co/json/");
-    const data = await response.json();
-
-    const newMeta = {
-      country: data.country_name || "Unknown",
-      city: data.city || "Unknown",
-      region: data.region || "Unknown",
-      isp: data.org || "Unknown",
-      ip: data.ip || "Unknown",
-      asn: data.asn || "Unknown",
-      lat: data.latitude || "Unknown",
-      lon: data.longitude || "Unknown",
-      currency: data.currency || "Unknown",
-      languages: data.languages || "Unknown",
-      timezone: data.timezone || "Unknown",
-      lastChecked: Date.now(),
-    };
-
-    localStorage.setItem(META_KEY, JSON.stringify(newMeta));
-    return newMeta;
-  } catch (error) {
-    const fallback = {
-      country: "Unknown",
-      city: "Unknown",
-      region: "Unknown",
-      isp: "Unknown",
-      ip: "Unknown",
-      asn: "Unknown",
-      lat: "Unknown",
-      lon: "Unknown",
-      currency: "Unknown",
-      languages: "Unknown",
-      timezone: "Unknown",
-      lastChecked: Date.now(),
-    };
-
-    localStorage.setItem(META_KEY, JSON.stringify(fallback));
-    return fallback;
-  }
+  return {
+    timezone,
+    languages,
+    lastChecked: Date.now(),
+  };
 }

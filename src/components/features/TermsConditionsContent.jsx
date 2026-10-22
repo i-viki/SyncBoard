@@ -65,10 +65,10 @@ function TermsConditionsContent() {
                 </Link>{" "}
                 or via email at{" "}
                 <Link
-                  href="mailto:jayavignesh324@gmail.com"
+                  href="mailto:hello@jayavignesh.dev"
                   underline="hover"
                 >
-                  jayavignesh324@gmail.com
+                  hello@jayavignesh.dev
                 </Link>.
               </Typography>
             )}

@@ -76,7 +76,7 @@ function ClipField() {
       toast.error("Board is locked");
       return;
     }
-    updateRoomText(code, value, firebaseData);
+    updateRoomText(code, value);
   };
 
   // Handle typing
@@ -88,7 +88,7 @@ function ClipField() {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       updateValueInDatabase(value);
-    }, 500);
+    }, 400);
   }, [firebaseData, isLocked, code]);
 
   /* ================= EDITOR ACTIONS ================= */
@@ -130,8 +130,18 @@ function ClipField() {
 
   /* ================= PIN HASH ================= */
 
-  // Hash PIN with SHA-256
-  async function hashPin(pin) {
+  // Hash PIN with SHA-256 (salted with room code to prevent rainbow table attacks)
+  async function hashPin(pin, salt = code) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(`${salt}:${pin}`);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  // Legacy fallback for boards created before salting
+  async function legacyHashPin(pin) {
     const encoder = new TextEncoder();
     const data = encoder.encode(pin);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
@@ -539,7 +549,8 @@ function ClipField() {
                 setIsLockDisabled(false);
                 toast.success("Board locked");
               } else {
-                if (firebaseData.passwordHash === hashed) {
+                const isMatch = firebaseData.passwordHash === hashed || firebaseData.passwordHash === await legacyHashPin(pinInput);
+                if (isMatch) {
                   await updateRoom(code, {
                     ...firebaseData,
                     passwordHash: null,

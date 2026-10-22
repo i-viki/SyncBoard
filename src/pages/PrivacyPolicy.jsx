@@ -14,10 +14,9 @@ function PrivacyPolicy() {
         <meta name="description" content="Learn how SyncBoard protects your privacy and handles data." />
       </Helmet>
 
-      <Box sx={{ py: { xs: 8, md: 12 } }}>
-        <Container maxWidth="md">
-          {/* Header Section */}
-          <Box sx={{ mb: 7, textAlign: "center" }}>
+      <Container maxWidth="md" sx={{ mt: { xs: 6, md: 10 }, mb: { xs: 8, md: 14 } }}>
+        {/* Header Section */}
+        <Box sx={{ mb: 7, textAlign: "center" }}>
             <Box
               sx={{
                 display: "inline-flex",
@@ -99,7 +98,6 @@ function PrivacyPolicy() {
             <PrivacyPolicyContent />
           </Box>
         </Container>
-      </Box>
     </>
   );
 }

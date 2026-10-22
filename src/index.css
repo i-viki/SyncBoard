@@ -9,13 +9,12 @@
   --color-accent-blue: #0099ff;
   --color-ink: #ffffff;
   --color-ink-muted: #999999;
-  --color-gradient-magenta: #d44df0;
-  --color-gradient-violet: #6a4cf5;
-  --color-gradient-orange: #ff7a3d;
-  --color-gradient-coral: #ff5577;
+  --color-accent-cyan: #38bdf8;
+  --color-accent-indigo: #6366f1;
+  --color-accent-emerald: #10b981;
   --color-semantic-success: #22c55e;
 
-  --canvas-gradient: radial-gradient(circle at 50% 0%, #161616 0%, #090909 50%, #050505 100%);
+  --canvas-gradient: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 153, 255, 0.08), transparent 70%), #090909;
   --scrollbar-thumb: #262626;
   --scrollbar-thumb-hover: #383838;
 
@@ -35,13 +34,12 @@
   --color-accent-blue: #0099ff;
   --color-ink: #090909;
   --color-ink-muted: #71717a;
-  --color-gradient-magenta: #d44df0;
-  --color-gradient-violet: #6a4cf5;
-  --color-gradient-orange: #ff7a3d;
-  --color-gradient-coral: #ff5577;
+  --color-accent-cyan: #0284c7;
+  --color-accent-indigo: #4f46e5;
+  --color-accent-emerald: #059669;
   --color-semantic-success: #22c55e;
 
-  --canvas-gradient: radial-gradient(circle at 50% 0%, #ffffff 0%, #fafafa 50%, #f4f4f5 100%);
+  --canvas-gradient: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 153, 255, 0.04), transparent 70%), #fafafa;
   --scrollbar-thumb: #d4d4d8;
   --scrollbar-thumb-hover: #a1a1aa;
 }
@@ -52,6 +50,12 @@ h1, h2, h3, h4, h5, h6 {
 
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+html {
+  /* Lock scrollbar gutter to prevent any horizontal jumping/layout shift across routes */
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
 }
 
 html, body {

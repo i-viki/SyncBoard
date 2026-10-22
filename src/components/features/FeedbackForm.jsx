@@ -150,7 +150,7 @@ export default function FeedbackForm() {
           : "0 24px 60px rgba(0, 0, 0, 0.06)",
       }}
     >
-      {/* LEFT SIDE: Framer Spotlight Panel */}
+      {/* LEFT SIDE: SaaS Spotlight Panel */}
       <Box
         sx={{
           flex: 1,
@@ -158,8 +158,11 @@ export default function FeedbackForm() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)",
-          color: "#ffffff",
+          background: isDark
+            ? "radial-gradient(420px circle at 0% 0%, rgba(0, 153, 255, 0.14), transparent 70%), #141414"
+            : "radial-gradient(420px circle at 0% 0%, rgba(0, 153, 255, 0.08), transparent 70%), #fafafa",
+          color: isDark ? "#ffffff" : "#090909",
+          borderRight: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
           position: "relative",
           overflow: "hidden",
         }}
@@ -173,13 +176,13 @@ export default function FeedbackForm() {
               px: 1.5,
               py: 0.5,
               borderRadius: "100px",
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-              backdropFilter: "blur(10px)",
+              backgroundColor: isDark ? "rgba(0, 153, 255, 0.12)" : "rgba(0, 153, 255, 0.08)",
+              border: `1px solid ${isDark ? "rgba(0, 153, 255, 0.25)" : "rgba(0, 153, 255, 0.2)"}`,
               mb: 3,
             }}
           >
-            <Sparkles size={14} color="#ffffff" />
-            <Typography sx={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <Sparkles size={14} color="#0099ff" />
+            <Typography sx={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "#0099ff" }}>
               Community Driven
             </Typography>
           </Box>
@@ -192,6 +195,7 @@ export default function FeedbackForm() {
               letterSpacing: "-1px",
               lineHeight: 1.15,
               mb: 2,
+              color: isDark ? "#ffffff" : "#090909",
             }}
           >
             We build SyncBoard with your voice.
@@ -201,7 +205,7 @@ export default function FeedbackForm() {
             sx={{
               fontSize: "14px",
               lineHeight: 1.6,
-              color: "rgba(255, 255, 255, 0.88)",
+              color: isDark ? "#999999" : "#71717a",
               letterSpacing: "-0.14px",
             }}
           >
@@ -226,7 +230,7 @@ export default function FeedbackForm() {
         <Typography
           sx={{
             fontSize: "12px",
-            color: "rgba(255, 255, 255, 0.7)",
+            color: isDark ? "#666666" : "#a1a1aa",
             letterSpacing: "-0.12px",
           }}
         >

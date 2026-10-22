@@ -115,7 +115,7 @@ export default function Navbar({ toggleTheme, mode }) {
                   sx={{
                     position: "relative",
                     fontSize: "14px",
-                    fontWeight: isActive ? 600 : 500,
+                    fontWeight: 500,
                     letterSpacing: "-0.14px",
                     color: isActive
                       ? (isDark ? "#ffffff" : "#090909")

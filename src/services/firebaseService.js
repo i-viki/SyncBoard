@@ -1,6 +1,6 @@
 // firebaseRoomService.js
 
-import { ref, update, onValue, get, off, onDisconnect, set } from "firebase/database";
+import { ref, update, onValue, get, onDisconnect, set } from "firebase/database";
 import { appDatabase } from "../config/firebase";
 
 /* ========================= */
@@ -27,7 +27,7 @@ export const listenToRoom = (code, callback) => {
     callback(snapshot.val());
   });
 
-  return () => off(roomRef, "value", unsubscribe);
+  return unsubscribe;
 };
 
 /* ========================= */
@@ -58,8 +58,7 @@ export const getRoomOnce = async (code) => {
 
 export const updateRoomText = async (
   code,
-  value,
-  firebaseData
+  value
 ) => {
   const roomRef = getRoomRef(code);
 
@@ -67,9 +66,7 @@ export const updateRoomText = async (
 
   return update(roomRef, {
     text: value,
-    images: firebaseData?.images || [],
     lastUpdated: now,
-    passwordHash: firebaseData?.passwordHash || null,
   });
 };
 

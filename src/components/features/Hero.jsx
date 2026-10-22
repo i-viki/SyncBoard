@@ -55,11 +55,11 @@ function Hero() {
   const generateJoiningCode = () => {
     const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const bytes = new Uint8Array(JOINING_CODE_LENGTH);
+    crypto.getRandomValues(bytes);
     let createdCode = "";
     for (let i = 0; i < JOINING_CODE_LENGTH; i++) {
-      createdCode += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
+      createdCode += characters.charAt(bytes[i] % characters.length);
     }
     setJoiningCode("");
     clipboardLogging(createdCode, true);
@@ -82,9 +82,28 @@ function Hero() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 10 }, mb: { xs: 8, md: 14 } }}>
+    <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 10 }, mb: { xs: 8, md: 14 }, position: "relative" }}>
+      {/* Subtle SaaS Ambient Glow Beam */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: "-100px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "100%",
+          maxWidth: "1000px",
+          height: "400px",
+          background: isDark
+            ? "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0, 153, 255, 0.12), rgba(99, 102, 241, 0.04) 50%, transparent 80%)"
+            : "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0, 153, 255, 0.06), rgba(99, 102, 241, 0.02) 50%, transparent 80%)",
+          filter: "blur(40px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       {/* Framer Display Hero Header */}
-      <Box sx={{ textAlign: "center", mb: { xs: 5, md: 8 } }}>
+      <Box sx={{ textAlign: "center", mb: { xs: 5, md: 8 }, position: "relative", zIndex: 1 }}>
         {/* Subtle pill tag */}
         <Box
           sx={{
@@ -127,7 +146,11 @@ function Hero() {
             fontWeight: 500,
             lineHeight: { xs: 1.02, md: 0.95 },
             letterSpacing: { xs: "-1.5px", sm: "-3.2px", md: "-4.5px" },
-            color: isDark ? "#ffffff" : "#090909",
+            background: isDark
+              ? "linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.72) 100%)"
+              : "linear-gradient(180deg, #090909 0%, #3f3f46 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
             mb: 2.5,
             maxWidth: "960px",
             mx: "auto",
@@ -166,6 +189,18 @@ function Hero() {
           position: "relative",
           overflow: "hidden",
           transition: "background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: "15%",
+            right: "15%",
+            height: "1px",
+            background: isDark
+              ? "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent)"
+              : "linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.35), transparent)",
+            pointerEvents: "none",
+          },
         }}
       >
         <Stack
@@ -574,24 +609,45 @@ function Hero() {
         </Box>
 
         <Grid container spacing={3}>
-          {/* Card 1: Signature Violet Spotlight Card */}
+          {/* Card 1: Electric Blue Live Sync Spotlight */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Box
               sx={{
                 height: "100%",
                 p: { xs: 3.5, md: 4 },
-                borderRadius: "30px", // Framer rounded.xxl
-                background: "linear-gradient(135deg, #6a4cf5 0%, #d44df0 100%)",
-                color: "#ffffff",
-                boxShadow: "0 24px 60px -15px rgba(106, 76, 245, 0.4)",
+                borderRadius: "24px",
+                backgroundColor: isDark ? "#141414" : "#ffffff",
+                background: isDark
+                  ? "radial-gradient(380px circle at 50% 0%, rgba(0, 153, 255, 0.12), transparent 70%), #141414"
+                  : "radial-gradient(380px circle at 50% 0%, rgba(0, 153, 255, 0.05), transparent 70%), #ffffff",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                boxShadow: isDark
+                  ? "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 36px -12px rgba(0, 0, 0, 0.5)"
+                  : "0 10px 30px rgba(0, 0, 0, 0.05)",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 position: "relative",
                 overflow: "hidden",
-                transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "20%",
+                  right: "20%",
+                  height: "1px",
+                  background: isDark
+                    ? "linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.4), transparent)"
+                    : "linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.3), transparent)",
+                  pointerEvents: "none",
+                },
                 "&:hover": {
+                  borderColor: isDark ? "#383838" : "#d4d4d8",
                   transform: "translateY(-4px)",
+                  boxShadow: isDark
+                    ? "0 20px 40px -15px rgba(0, 153, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                    : "0 20px 40px -15px rgba(0, 153, 255, 0.12)",
                 },
               }}
             >
@@ -601,14 +657,15 @@ function Hero() {
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    backgroundColor: isDark ? "rgba(0, 153, 255, 0.12)" : "rgba(0, 153, 255, 0.08)",
+                    border: `1px solid ${isDark ? "rgba(0, 153, 255, 0.25)" : "rgba(0, 153, 255, 0.2)"}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     mb: 3,
                   }}
                 >
-                  <BoltIcon sx={{ color: "#ffffff", fontSize: 24 }} />
+                  <BoltIcon sx={{ color: "#0099ff", fontSize: 24 }} />
                 </Box>
                 <Typography
                   sx={{
@@ -617,6 +674,7 @@ function Hero() {
                     fontWeight: 600,
                     letterSpacing: "-0.6px",
                     mb: 1.5,
+                    color: isDark ? "#ffffff" : "#090909",
                     lineHeight: 1.2,
                   }}
                 >
@@ -626,7 +684,7 @@ function Hero() {
                   sx={{
                     fontSize: "14px",
                     lineHeight: 1.5,
-                    color: "rgba(255, 255, 255, 0.88)",
+                    color: isDark ? "#999999" : "#71717a",
                     letterSpacing: "-0.14px",
                   }}
                 >
@@ -642,15 +700,19 @@ function Hero() {
                   fontWeight: 600,
                   letterSpacing: "0.05em",
                   textTransform: "uppercase",
-                  color: "rgba(255, 255, 255, 0.7)",
+                  color: "#0099ff",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
                 }}
               >
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#0099ff" }} />
                 Instant Telemetry
               </Typography>
             </Box>
           </Grid>
 
-          {/* Card 2: Charcoal / White Surface Card */}
+          {/* Card 2: Emerald Privacy Spotlight */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Box
               sx={{
@@ -658,17 +720,37 @@ function Hero() {
                 p: { xs: 3.5, md: 4 },
                 borderRadius: "24px",
                 backgroundColor: isDark ? "#141414" : "#ffffff",
+                background: isDark
+                  ? "radial-gradient(380px circle at 50% 0%, rgba(16, 185, 129, 0.10), transparent 70%), #141414"
+                  : "radial-gradient(380px circle at 50% 0%, rgba(16, 185, 129, 0.05), transparent 70%), #ffffff",
                 border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
                 boxShadow: isDark
-                  ? "inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                  ? "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 36px -12px rgba(0, 0, 0, 0.5)"
                   : "0 10px 30px rgba(0, 0, 0, 0.05)",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                position: "relative",
+                overflow: "hidden",
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "20%",
+                  right: "20%",
+                  height: "1px",
+                  background: isDark
+                    ? "linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.35), transparent)"
+                    : "linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.25), transparent)",
+                  pointerEvents: "none",
+                },
                 "&:hover": {
                   borderColor: isDark ? "#383838" : "#d4d4d8",
                   transform: "translateY(-4px)",
+                  boxShadow: isDark
+                    ? "0 20px 40px -15px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                    : "0 20px 40px -15px rgba(16, 185, 129, 0.12)",
                 },
               }}
             >
@@ -678,15 +760,15 @@ function Hero() {
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
-                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 153, 255, 0.08)",
-                    border: `1px solid ${isDark ? "#262626" : "rgba(0, 153, 255, 0.2)"}`,
+                    backgroundColor: isDark ? "rgba(16, 185, 129, 0.12)" : "rgba(16, 185, 129, 0.08)",
+                    border: `1px solid ${isDark ? "rgba(16, 185, 129, 0.25)" : "rgba(16, 185, 129, 0.2)"}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     mb: 3,
                   }}
                 >
-                  <ShieldIcon sx={{ color: "#0099ff", fontSize: 24 }} />
+                  <ShieldIcon sx={{ color: "#10b981", fontSize: 24 }} />
                 </Box>
                 <Typography
                   sx={{
@@ -721,32 +803,57 @@ function Hero() {
                   fontWeight: 600,
                   letterSpacing: "0.05em",
                   textTransform: "uppercase",
-                  color: "#0099ff",
+                  color: "#10b981",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
                 }}
               >
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#10b981" }} />
                 Zero Persistent Profiles
               </Typography>
             </Box>
           </Grid>
 
-          {/* Card 3: Signature Sunset Orange Spotlight Card */}
+          {/* Card 3: Indigo Cross-Platform Spotlight */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Box
               sx={{
                 height: "100%",
                 p: { xs: 3.5, md: 4 },
-                borderRadius: "30px", // Framer rounded.xxl
-                background: "linear-gradient(135deg, #ff7a3d 0%, #ff5577 100%)",
-                color: "#ffffff",
-                boxShadow: "0 24px 60px -15px rgba(255, 122, 61, 0.35)",
+                borderRadius: "24px",
+                backgroundColor: isDark ? "#141414" : "#ffffff",
+                background: isDark
+                  ? "radial-gradient(380px circle at 50% 0%, rgba(99, 102, 241, 0.12), transparent 70%), #141414"
+                  : "radial-gradient(380px circle at 50% 0%, rgba(99, 102, 241, 0.05), transparent 70%), #ffffff",
+                border: `1px solid ${isDark ? "#262626" : "#e4e4e7"}`,
+                boxShadow: isDark
+                  ? "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 36px -12px rgba(0, 0, 0, 0.5)"
+                  : "0 10px 30px rgba(0, 0, 0, 0.05)",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 position: "relative",
                 overflow: "hidden",
-                transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "20%",
+                  right: "20%",
+                  height: "1px",
+                  background: isDark
+                    ? "linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent)"
+                    : "linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.25), transparent)",
+                  pointerEvents: "none",
+                },
                 "&:hover": {
+                  borderColor: isDark ? "#383838" : "#d4d4d8",
                   transform: "translateY(-4px)",
+                  boxShadow: isDark
+                    ? "0 20px 40px -15px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                    : "0 20px 40px -15px rgba(99, 102, 241, 0.12)",
                 },
               }}
             >
@@ -756,14 +863,15 @@ function Hero() {
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    backgroundColor: isDark ? "rgba(99, 102, 241, 0.12)" : "rgba(99, 102, 241, 0.08)",
+                    border: `1px solid ${isDark ? "rgba(99, 102, 241, 0.25)" : "rgba(99, 102, 241, 0.2)"}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     mb: 3,
                   }}
                 >
-                  <DevicesIcon sx={{ color: "#ffffff", fontSize: 24 }} />
+                  <DevicesIcon sx={{ color: "#6366f1", fontSize: 24 }} />
                 </Box>
                 <Typography
                   sx={{
@@ -772,6 +880,7 @@ function Hero() {
                     fontWeight: 600,
                     letterSpacing: "-0.6px",
                     mb: 1.5,
+                    color: isDark ? "#ffffff" : "#090909",
                     lineHeight: 1.2,
                   }}
                 >
@@ -781,7 +890,7 @@ function Hero() {
                   sx={{
                     fontSize: "14px",
                     lineHeight: 1.5,
-                    color: "rgba(255, 255, 255, 0.88)",
+                    color: isDark ? "#999999" : "#71717a",
                     letterSpacing: "-0.14px",
                   }}
                 >
@@ -797,9 +906,13 @@ function Hero() {
                   fontWeight: 600,
                   letterSpacing: "0.05em",
                   textTransform: "uppercase",
-                  color: "rgba(255, 255, 255, 0.7)",
+                  color: "#6366f1",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
                 }}
               >
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#6366f1" }} />
                 PWA & Offline Ready
               </Typography>
             </Box>

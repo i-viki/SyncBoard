@@ -44,43 +44,29 @@ async function getUserContext() {
 
   const context = {
     uuid,
-    country: meta?.country || "Unknown",
-    city: meta?.city || "Unknown",
-    region: meta?.region || "Unknown",
-    isp: meta?.isp || "Unknown",
-    ip: meta?.ip || "Unknown",
-    asn: meta?.asn || "Unknown",
-    lat: meta?.lat || "Unknown",
-    lon: meta?.lon || "Unknown",
-    currency: meta?.currency || "Unknown",
     languages: meta?.languages || "Unknown",
     timezone: meta?.timezone || "Unknown",
     meta_last_checked: meta?.lastChecked || 0,
     ...device
   };
 
-  // Unify user identity in Google Analytics
-  setUserId(appAnalytics, uuid);
+  try {
+    // Unify user identity in Google Analytics
+    setUserId(appAnalytics, uuid);
 
-  // Set Global User Properties
-  setUserProperties(appAnalytics, {
-    user_country: context.country,
-    user_region: context.region,
-    user_city: context.city,
-    user_isp: context.isp,
-    user_ip: context.ip,
-    user_asn: context.asn,
-    user_lat: context.lat,
-    user_lon: context.lon,
-    user_currency: context.currency,
-    user_languages: context.languages,
-    user_timezone: context.timezone,
-    user_os: context.os,
-    user_browser: context.browser,
-    user_device: context.device,
-    user_resolution: context.resolution,
-    user_language_code: context.language
-  });
+    // Set Global User Properties (PII-free)
+    setUserProperties(appAnalytics, {
+      user_languages: context.languages,
+      user_timezone: context.timezone,
+      user_os: context.os,
+      user_browser: context.browser,
+      user_device: context.device,
+      user_resolution: context.resolution,
+      user_language_code: context.language
+    });
+  } catch (e) {
+    // Graceful handling if analytics is blocked by ad blocker
+  }
 
   return context;
 }

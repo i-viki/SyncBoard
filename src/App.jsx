@@ -1,13 +1,28 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
-import Home from "./pages/Home";
-import Explore from "./pages/Explore";
-import Clipboard from "./pages/Clipboard";
-import Feedback from "./pages/Feedback";
-import TermsConditions from "./pages/TermsConditions";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+// Code-split pages for optimized initial bundle delivery
+const Home = lazy(() => import("./pages/Home"));
+const Explore = lazy(() => import("./pages/Explore"));
+const Clipboard = lazy(() => import("./pages/Clipboard"));
+const Feedback = lazy(() => import("./pages/Feedback"));
+const TermsConditions = lazy(() => import("./pages/TermsConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+
+// Prefetch secondary pages on idle so route transitions feel instantaneous and seamless
+if (typeof window !== "undefined") {
+  const prefetchPages = () => {
+    import("./pages/Explore");
+    import("./pages/Feedback");
+  };
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(prefetchPages);
+  } else {
+    setTimeout(prefetchPages, 800);
+  }
+}
+
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import UserIdentification from "./components/common/UserIdentification";
@@ -15,6 +30,19 @@ import UpdateAvailableServiceWorker from "./components/common/UpdateAvailableSer
 import ScrollToTop from "./components/common/ScrollToTop";
 
 import "./App.css";
+
+const PageLoader = () => (
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "calc(100vh - 120px)",
+    }}
+  >
+    <CircularProgress size={32} sx={{ color: "#0099ff" }} />
+  </Box>
+);
 
 function App({ toggleTheme, mode }) {
   const location = useLocation();
@@ -35,25 +63,26 @@ function App({ toggleTheme, mode }) {
       <UpdateAvailableServiceWorker />
       <ScrollToTop />
 
-
       {/* Navbar (hidden for clipboard route) */}
       {!isClipboardRoute && (
         <Navbar toggleTheme={toggleTheme} mode={mode} />
       )}
 
-      {/* Main Content */}
+      {/* Main Content with Route Code Splitting */}
       <Box sx={{ flex: 1 }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-conditions" element={<TermsConditions />} />
-          <Route
-            path="/:code"
-            element={<Clipboard toggleTheme={toggleTheme} mode={mode} />}
-          />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route
+              path="/:code"
+              element={<Clipboard toggleTheme={toggleTheme} mode={mode} />}
+            />
+          </Routes>
+        </Suspense>
       </Box>
 
       {/* Footer (hide for clipboard route if you want full editor experience) */}

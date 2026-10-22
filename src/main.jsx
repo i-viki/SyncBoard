@@ -19,7 +19,7 @@ const getInitialMode = () => {
 
 /* ------------------ Main Component ------------------ */
 
-function Main() {
+export default function Main() {
   const [mode, setMode] = React.useState(getInitialMode);
 
   const toggleTheme = () => {

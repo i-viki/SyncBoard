@@ -82,4 +82,4 @@ Currently, there are no plans to modify or discontinue the service.
 
 **20. How Can Users Contact Us with Questions About Our Policies?**
 
-Users can contact us via the feedback form at the /feedback route or by email at jayavignesh324@gmail.com.
+Users can contact us via the feedback form at the /feedback route or by email at hello@jayavignesh.dev.

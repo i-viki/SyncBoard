@@ -23,7 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { appDatabase } from "../../config/firebase";
-import { ref, onDisconnect, onValue } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { clickLogging } from "../../services/analyticsService";
 import { toast } from "sonner";
 import QRCodeModal from "./QRCodeModal";
@@ -58,6 +58,7 @@ export default function ClipNavbar({ internetStatus, toggleTheme, mode }) {
   // Connection status & Presence — wait for auth first
   useEffect(() => {
     let cancelled = false;
+    let unsubConnected = null;
     let unsubTrack = null;
     let unsubPresence = null;
     let unsubRoom = null;
@@ -66,9 +67,8 @@ export default function ClipNavbar({ internetStatus, toggleTheme, mode }) {
       .then(() => {
         if (cancelled) return;
 
-        onDisconnect(roomRef);
         const connectionStatusRef = ref(appDatabase, ".info/connected");
-        onValue(connectionStatusRef, (snapshot) => {
+        unsubConnected = onValue(connectionStatusRef, (snapshot) => {
           const isConnected = snapshot.val();
           setStatus(isConnected ? "Connected" : "Connecting...");
         });
@@ -94,6 +94,7 @@ export default function ClipNavbar({ internetStatus, toggleTheme, mode }) {
 
     return () => {
       cancelled = true;
+      if (unsubConnected) unsubConnected();
       if (unsubPresence) unsubPresence();
       if (unsubRoom) unsubRoom();
       if (unsubTrack) unsubTrack();

@@ -8,15 +8,14 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "production" && removeConsole(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: [
         "favicon/favicon.ico",
         "favicon/apple-touch-icon.png",
         "favicon/favicon-32x32.png",
         "favicon/favicon-16x16.png",
         "assets/*.webp",
-        "assets/*.png",
-        "assets/*.svg"
+        "assets/*.svg",
       ],
       manifest: {
         name: "SyncBoard",
@@ -46,15 +45,29 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        globPatterns: mode === "production" ? ["**/*.{js,css,html,ico,png,svg,webp}"] : [],
+        globPatterns: mode === "production" ? ["**/*.{js,css,html,ico,svg,webp}"] : [],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
             options: {
-              cacheName: "google-fonts-cache",
+              cacheName: "google-fonts-stylesheets",
               expiration: {
                 maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-webfonts",
+              expiration: {
+                maxEntries: 30,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
               cacheableResponse: {
@@ -65,8 +78,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       devOptions: {
-        enabled: true,
-        type: "module",
+        enabled: false,
       },
     }),
   ].filter(Boolean),
@@ -90,10 +102,16 @@ export default defineConfig(({ mode }) => ({
 
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            if (id.includes("@mui")) return "mui";
+            if (id.includes("@mui") || id.includes("@emotion")) return "mui";
             if (id.includes("firebase")) return "firebase";
             if (id.includes("react-router")) return "router";
-            if (id.includes("react")) return "react-vendor";
+            if (
+              id.includes("node_modules/react/") ||
+              id.includes("node_modules/react-dom/") ||
+              id.includes("node_modules/scheduler/")
+            ) {
+              return "react-core";
+            }
           }
         },
       },
